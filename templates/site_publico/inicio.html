@@ -12,11 +12,6 @@
         <a href="#agendar" class="botao botao--azul botao--grande">Agendar minha consulta <i class="ph ph-arrow-right seta" aria-hidden="true"></i></a>
         <a href="#especialidades" class="botao botao--linha botao--grande">Ver especialidades</a>
       </div>
-      <ul class="selos anim d5">
-        <li><i class="ph ph-clock" aria-hidden="true"></i>Hora marcada</li>
-        <li><i class="ph ph-seal-check" aria-hidden="true"></i>Equipe com registro no conselho</li>
-        <li><i class="ph ph-whatsapp-logo" aria-hidden="true"></i>Lembrete no WhatsApp</li>
-      </ul>
     </div>
 
     <div class="hero__midia foto-entra">
@@ -30,12 +25,11 @@
         {% endif %}
       </div>
       {% if proximo %}
-      <div class="proximo">
-        <span class="proximo__ponto" aria-hidden="true"></span>
-        <span>
-          <small>Próximo horário disponível</small>
-          <strong>{% if proximo_eh_hoje %}Hoje{% else %}{{ proximo.inicio|date:"l, d/m"|capfirst }}{% endif %}, às {{ proximo.inicio|time:"H:i" }}</strong>
-        </span>
+      <div class="etiqueta">
+        <small>Próximo horário livre</small>
+        <strong>{% if proximo_eh_hoje %}Hoje{% else %}{{ proximo.inicio|date:"D, d/m"|capfirst }}{% endif %}</strong>
+        <strong>às {{ proximo.inicio|time:"H:i" }}</strong>
+        <span aria-hidden="true"></span>
       </div>
       {% endif %}
     </div>
@@ -43,21 +37,21 @@
 </section>
 
 <div class="container">
-  <nav class="acesso-rapido anim d6" aria-label="Acesso rápido">
-    <a href="#agendar">
-      <span class="acesso-rapido__icone"><i class="ph ph-calendar-check" aria-hidden="true"></i></span>
-      <span class="acesso-rapido__texto"><strong>Agende sua consulta</strong><small>Horários disponíveis</small></span>
-      <i class="ph ph-caret-right seta" aria-hidden="true"></i>
+  <nav class="atalhos anim d5" aria-label="Acesso rápido">
+    <a href="#agendar" class="atalho atalho--marinho">
+      <i class="ph ph-calendar-check" aria-hidden="true"></i>
+      <strong>Agende sua consulta</strong>
+      <span>Escolha o profissional e o horário <i class="ph ph-arrow-right seta" aria-hidden="true"></i></span>
     </a>
-    <a href="#">
-      <span class="acesso-rapido__icone"><i class="ph ph-clipboard-text" aria-hidden="true"></i></span>
-      <span class="acesso-rapido__texto"><strong>Meus agendamentos</strong><small>Remarcar ou cancelar</small></span>
-      <i class="ph ph-caret-right seta" aria-hidden="true"></i>
+    <a href="#" class="atalho atalho--azul">
+      <i class="ph ph-clipboard-text" aria-hidden="true"></i>
+      <strong>Meus agendamentos</strong>
+      <span>Remarque ou cancele <i class="ph ph-arrow-right seta" aria-hidden="true"></i></span>
     </a>
-    <a href="{{ clinica.mapa_url|default:'#visite' }}" {% if clinica.mapa_url %}target="_blank" rel="noopener"{% endif %}>
-      <span class="acesso-rapido__icone"><i class="ph ph-map-pin-line" aria-hidden="true"></i></span>
-      <span class="acesso-rapido__texto"><strong>Como chegar</strong><small>{{ clinica.endereco }}</small></span>
-      <i class="ph ph-caret-right seta" aria-hidden="true"></i>
+    <a href="{{ clinica.mapa_url|default:'#visite' }}" class="atalho atalho--claro" {% if clinica.mapa_url %}target="_blank" rel="noopener"{% endif %}>
+      <i class="ph ph-map-pin-line" aria-hidden="true"></i>
+      <strong>Como chegar</strong>
+      <span>{{ clinica.endereco }} <i class="ph ph-arrow-right seta" aria-hidden="true"></i></span>
     </a>
   </nav>
 </div>

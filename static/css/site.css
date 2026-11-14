@@ -96,29 +96,35 @@ a:hover .seta { transform: translateX(4px); }
 .hero__titulo em { font-style: normal; color: var(--azul); }
 .hero__texto { margin: 28px 0 0; font-size: clamp(17px, 1.3vw, 20px); line-height: 1.65; color: var(--texto-2); max-width: 580px; }
 .hero__acoes { display: flex; gap: 14px; margin-top: 40px; flex-wrap: wrap; }
-.selos { margin: 44px 0 0; padding: 28px 0 0; list-style: none; display: flex; gap: 14px 32px; flex-wrap: wrap; border-top: 1px solid var(--borda); font-size: 15px; color: var(--texto-2); }
-.selos li { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
-.selos .ph { color: var(--azul-escuro); font-size: 20px; }
-.hero__midia { position: relative; padding: 0 0 36px 36px; }
-.hero__pontos { position: absolute; right: -18px; top: -18px; width: 150px; height: 150px; background-image: radial-gradient(#8FC6EA 1.6px, transparent 1.6px); background-size: 14px 14px; opacity: .8; }
-.hero__imagem { position: relative; aspect-ratio: 5 / 4; border-radius: 18px; background: var(--azul-claro); border: 1px solid #D3E6F4; display: flex; flex-direction: column; gap: 12px; align-items: center; justify-content: center; color: #3A5F86; font-weight: 500; overflow: hidden; }
+.hero__midia { position: relative; }
+.hero__pontos { display: none; position: absolute; right: -18px; top: -18px; width: 150px; height: 150px; background-image: radial-gradient(#8FC6EA 1.6px, transparent 1.6px); background-size: 14px 14px; opacity: .8; }
+.hero__imagem { position: relative; aspect-ratio: 5 / 4; border-radius: 160px 18px 18px 18px; background: var(--azul-claro); border: 1px solid #D3E6F4; display: flex; flex-direction: column; gap: 12px; align-items: center; justify-content: center; color: #3A5F86; font-weight: 500; overflow: hidden; }
 .hero__imagem .ph { font-size: 52px; }
 .hero__imagem img { width: 100%; height: 100%; object-fit: cover; }
-.proximo { position: absolute; left: 0; bottom: 0; background: #fff; border: 1px solid var(--borda); border-radius: var(--raio-g); padding: 18px 22px; box-shadow: var(--sombra); display: flex; align-items: center; gap: 14px; }
-.proximo small { display: block; font-size: 13px; color: var(--texto-3); }
-.proximo strong { font-size: 17px; }
-.proximo__ponto { width: 10px; height: 10px; border-radius: 50%; background: var(--azul); animation: pulso 2s infinite; }
 
-/* ----- Acesso rápido ----- */
-.acesso-rapido { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--borda); border-radius: var(--raio-g); background: #fff; box-shadow: var(--sombra); overflow: hidden; margin: -44px 0 104px; position: relative; z-index: 2; }
-.acesso-rapido a { text-decoration: none; display: flex; align-items: center; gap: 18px; padding: 26px 28px; transition: background-color .2s; }
-.acesso-rapido a + a { border-left: 1px solid var(--borda); }
-.acesso-rapido a:hover { background: var(--fundo-faixa); }
-.acesso-rapido__icone { width: 52px; height: 52px; flex: none; border-radius: 12px; background: var(--azul-claro); color: var(--azul-escuro); display: inline-flex; align-items: center; justify-content: center; font-size: 26px; }
-.acesso-rapido__texto { display: flex; flex-direction: column; flex: 1; min-width: 0; }
-.acesso-rapido__texto strong { font-size: 17px; }
-.acesso-rapido__texto small { font-size: 14px; color: var(--texto-3); }
-.acesso-rapido > a > .ph { font-size: 18px; color: var(--texto-3); }
+
+/* ----- Etiqueta "próximo horário" (bloco sólido sobre a foto) ----- */
+.etiqueta { position: absolute; right: 24px; top: 32px; background: var(--marinho); color: #fff; border-radius: 12px; padding: 16px 18px 14px; min-width: 150px; display: flex; flex-direction: column; }
+.etiqueta small { font-size: 12px; text-transform: uppercase; letter-spacing: .12em; color: #AFC0DE; margin-bottom: 6px; }
+.etiqueta strong { font-family: var(--fonte-titulo); font-size: 22px; font-weight: 700; line-height: 1.15; letter-spacing: -0.02em; }
+.etiqueta span { display: block; width: 32px; height: 2px; background: #fff; margin-top: 12px; }
+
+/* ----- Atalhos (blocos sólidos) ----- */
+.atalhos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: -8px 0 104px; }
+.atalho { position: relative; display: flex; flex-direction: column; gap: 6px; padding: 28px 30px 26px; border-radius: 18px 18px 18px 4px; text-decoration: none; min-height: 168px; overflow: hidden; transition: background-color .2s; }
+.atalho > .ph { font-size: 30px; margin-bottom: auto; padding-bottom: 18px; }
+.atalho strong { font-family: var(--fonte-titulo); font-size: clamp(22px, 1.9vw, 28px); font-weight: 700; letter-spacing: -0.025em; line-height: 1.1; }
+.atalho span { display: inline-flex; align-items: center; gap: 8px; font-size: 15px; }
+.atalho--marinho { background: var(--marinho); color: #fff; }
+.atalho--marinho:hover { background: var(--marinho-2); color: #fff; }
+.atalho--marinho span { color: #C9D3E8; }
+.atalho--azul { background: var(--azul-escuro); color: #fff; }
+.atalho--azul:hover { background: #135A88; color: #fff; }
+.atalho--azul span { color: #DCEAF5; }
+.atalho--claro { background: var(--azul-claro); color: var(--marinho); }
+.atalho--claro:hover { background: #DCEDF8; color: var(--marinho); }
+.atalho--claro > .ph { color: var(--azul-escuro); }
+.atalho--claro span { color: var(--texto-2); }
 
 /* ----- Cartões ----- */
 .cartoes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
@@ -278,7 +284,6 @@ a:hover .seta { transform: translateX(4px); }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .anim, .foto-entra { animation: none; opacity: 1; }
-  .proximo__ponto { animation: none; }
   .botao, .cartao, .seta, .whatsapp { transition: none; }
 }
 
@@ -302,9 +307,10 @@ a:hover .seta { transform: translateX(4px); }
   .hero__conteudo { max-width: 680px; }
   .hero__midia { padding: 0; max-width: 680px; }
   .hero__pontos { display: none; }
-  .proximo { position: static; margin-top: 16px; }
-  .acesso-rapido { margin-top: 0; grid-template-columns: 1fr; }
-  .acesso-rapido a + a { border-left: none; border-top: 1px solid var(--borda); }
+  .hero__imagem { border-radius: 96px 16px 16px 16px; }
+  .atalhos { grid-template-columns: 1fr; margin-top: 0; }
+  .atalho { min-height: 0; }
+  .atalho > .ph { padding-bottom: 10px; }
   .rodape__grade { grid-template-columns: 1fr 1fr; }
   .visite { grid-template-columns: 1fr; }
   .visite__lista { grid-template-columns: 1fr; gap: 18px; }
@@ -324,10 +330,11 @@ a:hover .seta { transform: translateX(4px); }
   .menu-mobile summary { width: 44px; height: 44px; }
   .hero__acoes { flex-direction: column; }
   .hero__acoes .botao { width: 100%; }
-  .selos { flex-direction: column; gap: 12px; }
-  .proximo { width: 100%; }
-  .acesso-rapido { margin-bottom: 72px; }
-  .acesso-rapido a { padding: 20px; }
+  .atalhos { margin-bottom: 72px; }
+  .atalho { padding: 22px; }
+  .etiqueta { right: 12px; top: 12px; padding: 12px 14px; min-width: 0; }
+  .etiqueta strong { font-size: 18px; }
+  .hero__imagem { border-radius: 64px 14px 14px 14px; }
   .cartoes, .depoimentos, .artigos { grid-template-columns: 1fr; }
   .convenios__lista { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .galeria__item { flex-basis: 82%; }
