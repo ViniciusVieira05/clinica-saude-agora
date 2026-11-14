@@ -1,0 +1,1 @@
+<svg class="icone {{ classe|default:'' }}" width="{{ tamanho|default:20 }}" height="{{ tamanho|default:20 }}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.6A8.4 8.4 0 1 1 21 11.5z"/></svg>

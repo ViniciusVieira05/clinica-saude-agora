@@ -1,0 +1,11 @@
+<a href="{{ item.get_absolute_url }}" class="artigo">
+  <div class="artigo__capa">
+    {% if item.imagem %}<img src="{{ item.imagem.url }}" alt="" loading="lazy">{% else %}<i class="ph ph-article" aria-hidden="true"></i>{% endif %}
+  </div>
+  <div class="artigo__corpo">
+    <small>{{ item.publicado_em|date:"d \d\e F \d\e Y" }}</small>
+    <strong>{{ item.titulo }}</strong>
+    <p>{{ item.resumo }}</p>
+    <span class="cartao__link">Ler orientação <i class="ph ph-arrow-right seta" aria-hidden="true"></i></span>
+  </div>
+</a>

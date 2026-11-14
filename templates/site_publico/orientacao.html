@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block titulo %}{{ item.titulo }} · {{ clinica.nome }}{% endblock %}
+{% block descricao %}{{ item.resumo }}{% endblock %}
+
+{% block conteudo %}
+<article class="leitura">
+  <div class="container leitura__container">
+    <a href="{% url 'site_publico:orientacoes' %}" class="link-seta link-seta--voltar"><i class="ph ph-arrow-left" aria-hidden="true"></i> Todas as orientações</a>
+    <p class="rotulo"><span></span>{{ item.publicado_em|date:"d \d\e F \d\e Y" }}</p>
+    <h1 class="pagina-topo__titulo">{{ item.titulo }}</h1>
+    <p class="leitura__resumo">{{ item.resumo }}</p>
+    {% if item.imagem %}<img class="leitura__capa" src="{{ item.imagem.url }}" alt="">{% endif %}
+    <div class="leitura__texto">{{ item.conteudo|linebreaks }}</div>
+    <aside class="leitura__cta">
+      <div>
+        <strong>Ficou com alguma dúvida?</strong>
+        <p>Agende uma consulta ou fale com a nossa recepção.</p>
+      </div>
+      <a href="{% url 'site_publico:inicio' %}#agendar" class="botao botao--azul">Agendar consulta</a>
+    </aside>
+  </div>
+</article>
+
+{% if outras %}
+<section class="container secao">
+  <h2 class="secao__titulo">Outras orientações</h2>
+  <div class="artigos">
+    {% for item in outras %}{% include "site_publico/_artigo.html" %}{% endfor %}
+  </div>
+</section>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+{% load static saude %}
+
+{% block conteudo %}
+<section class="hero">
+  <div class="container hero__grade">
+    <div class="hero__conteudo">
+      <p class="rotulo anim d1"><span></span>Clínica médica em {{ clinica.cidade }}</p>
+      <h1 class="hero__titulo anim d2">Atendimento de qualidade, <em>perto de você.</em></h1>
+      <p class="hero__texto anim d3">Consultas e exames com hora marcada. Escolha o profissional e o horário direto pelo site, sem precisar esperar resposta no WhatsApp.</p>
+      <div class="hero__acoes anim d4">
+        <a href="#agendar" class="botao botao--azul botao--grande">Agendar minha consulta <i class="ph ph-arrow-right seta" aria-hidden="true"></i></a>
+        <a href="#especialidades" class="botao botao--linha botao--grande">Ver especialidades</a>
+      </div>
+      <ul class="selos anim d5">
+        <li><i class="ph ph-clock" aria-hidden="true"></i>Hora marcada</li>
+        <li><i class="ph ph-seal-check" aria-hidden="true"></i>Equipe com registro no conselho</li>
+        <li><i class="ph ph-whatsapp-logo" aria-hidden="true"></i>Lembrete no WhatsApp</li>
+      </ul>
+    </div>
+
+    <div class="hero__midia foto-entra">
+      <div class="hero__pontos" aria-hidden="true"></div>
+      <div class="hero__imagem">
+        {% if clinica.foto_fachada %}
+          <img src="{% static clinica.foto_fachada %}" alt="Fachada da {{ clinica.nome }}" width="800" height="640">
+        {% else %}
+          <i class="ph ph-image" aria-hidden="true"></i>
+          <span>[Foto da fachada ou da recepção]</span>
+        {% endif %}
+      </div>
+      {% if proximo %}
+      <div class="proximo">
+        <span class="proximo__ponto" aria-hidden="true"></span>
+        <span>
+          <small>Próximo horário disponível</small>
+          <strong>{% if proximo_eh_hoje %}Hoje{% else %}{{ proximo.inicio|date:"l, d/m"|capfirst }}{% endif %}, às {{ proximo.inicio|time:"H:i" }}</strong>
+        </span>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<div class="container">
+  <nav class="acesso-rapido anim d6" aria-label="Acesso rápido">
+    <a href="#agendar">
+      <span class="acesso-rapido__icone"><i class="ph ph-calendar-check" aria-hidden="true"></i></span>
+      <span class="acesso-rapido__texto"><strong>Agende sua consulta</strong><small>Horários disponíveis</small></span>
+      <i class="ph ph-caret-right seta" aria-hidden="true"></i>
+    </a>
+    <a href="#">
+      <span class="acesso-rapido__icone"><i class="ph ph-clipboard-text" aria-hidden="true"></i></span>
+      <span class="acesso-rapido__texto"><strong>Meus agendamentos</strong><small>Remarcar ou cancelar</small></span>
+      <i class="ph ph-caret-right seta" aria-hidden="true"></i>
+    </a>
+    <a href="{{ clinica.mapa_url|default:'#visite' }}" {% if clinica.mapa_url %}target="_blank" rel="noopener"{% endif %}>
+      <span class="acesso-rapido__icone"><i class="ph ph-map-pin-line" aria-hidden="true"></i></span>
+      <span class="acesso-rapido__texto"><strong>Como chegar</strong><small>{{ clinica.endereco }}</small></span>
+      <i class="ph ph-caret-right seta" aria-hidden="true"></i>
+    </a>
+  </nav>
+</div>
+
+<section class="container secao" id="especialidades">
+  <div class="secao__topo">
+    <div>
+      <p class="rotulo"><span></span>Especialidades</p>
+      <h2 class="secao__titulo">Cuidado completo em um só lugar</h2>
+    </div>
+  </div>
+  {% if especialidades %}
+    <div class="cartoes">
+      {% for especialidade in especialidades %}
+        <a href="#agendar" class="cartao">
+          <span class="cartao__icone"><i class="ph {{ especialidade.nome|icone_especialidade }}" aria-hidden="true"></i></span>
+          <strong>{{ especialidade.nome }}</strong>
+          <small>{{ especialidade.descricao|default:"Consultas com hora marcada"|truncatechars:70 }}</small>
+          <span class="cartao__link">Agendar <i class="ph ph-arrow-right seta" aria-hidden="true"></i></span>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="vazio">As especialidades aparecem aqui assim que forem cadastradas no painel.</p>
+  {% endif %}
+</section>
+
+{% if convenios %}
+<section class="container secao secao--compacta" id="convenios">
+  <div class="convenios">
+    <div class="convenios__texto">
+      <p class="rotulo"><span></span>Convênios</p>
+      <h2 class="convenios__titulo">Atendemos o seu plano</h2>
+      <p>Confirme a cobertura do seu procedimento com a recepção antes da consulta.</p>
+    </div>
+    <ul class="convenios__lista">
+      {% for convenio in convenios %}
+        <li>
+          {% if convenio.logo %}<img src="{{ convenio.logo.url }}" alt="{{ convenio.nome }}" loading="lazy">{% else %}<span>{{ convenio.nome }}</span>{% endif %}
+        </li>
+      {% endfor %}
+      <li class="convenios__particular"><i class="ph ph-wallet" aria-hidden="true"></i><span>Particular</span></li>
+    </ul>
+  </div>
+</section>
+{% endif %}
+
+<section class="faixa" id="agendar">
+  <div class="container faixa__grade">
+    <div>
+      <p class="rotulo"><span></span>Agendamento online</p>
+      <h2 class="secao__titulo">Agende em poucos passos</h2>
+      <ol class="passos">
+        <li><span>1</span><p><strong>Escolha a especialidade</strong>e o profissional que vai te atender.</p></li>
+        <li><span>2</span><p><strong>Veja os horários livres</strong>atualizados direto da agenda da clínica.</p></li>
+        <li><span class="destaque">3</span><p><strong>Receba a confirmação</strong>e um lembrete no WhatsApp antes da consulta.</p></li>
+      </ol>
+    </div>
+    <div class="painel-agendar">
+      <span class="painel-agendar__icone"><i class="ph ph-calendar-plus" aria-hidden="true"></i></span>
+      <h3>Pronto para agendar?</h3>
+      <p>O agendamento online leva menos de um minuto e você recebe a confirmação na hora.</p>
+      <a href="#" class="botao botao--azul botao--grande botao--bloco">Começar agendamento <i class="ph ph-arrow-right seta" aria-hidden="true"></i></a>
+      <p class="painel-agendar__lgpd"><i class="ph ph-lock-simple" aria-hidden="true"></i>Seus dados são protegidos conforme a LGPD</p>
+    </div>
+  </div>
+</section>
+
+{% if fotos %}
+<section class="secao" id="clinica">
+  <div class="container secao__topo">
+    <div>
+      <p class="rotulo"><span></span>A clínica</p>
+      <h2 class="secao__titulo">Conheça nosso espaço</h2>
+    </div>
+    <p class="secao__apoio">Ambientes pensados para o seu conforto, do atendimento na recepção à consulta.</p>
+  </div>
+  <div class="galeria" tabindex="0" aria-label="Fotos da clínica. Role para o lado para ver mais.">
+    {% for foto in fotos %}
+      <figure class="galeria__item">
+        <img src="{{ foto.imagem.url }}" alt="{{ foto.legenda }}" loading="lazy">
+        <figcaption>{{ foto.legenda }}</figcaption>
+      </figure>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{% if profissionais %}
+<section class="container secao" id="equipe">
+  <p class="rotulo"><span></span>Corpo clínico</p>
+  <h2 class="secao__titulo">Quem cuida de você</h2>
+  <div class="cartoes">
+    {% for profissional in profissionais %}
+      <article class="profissional">
+        {% if profissional.foto %}
+          <img src="{{ profissional.foto.url }}" alt="{{ profissional.nome }}" loading="lazy">
+        {% else %}
+          <div class="profissional__sem-foto"><i class="ph ph-user" aria-hidden="true"></i></div>
+        {% endif %}
+        <div class="profissional__dados">
+          <strong>{{ profissional.nome }}</strong>
+          <small>{% for e in profissional.especialidades.all %}{{ e.nome }}{% if not forloop.last %}, {% endif %}{% endfor %}</small>
+          <small class="profissional__registro"><i class="ph ph-seal-check" aria-hidden="true"></i>{{ profissional.registro_formatado }}</small>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{% if avaliacoes %}
+<section class="faixa faixa--suave" id="depoimentos">
+  <div class="container">
+    <div class="secao__topo">
+      <div>
+        <p class="rotulo"><span></span>Avaliações</p>
+        <h2 class="secao__titulo">O que dizem nossos pacientes</h2>
+      </div>
+      <p class="secao__apoio"><i class="ph ph-google-logo" aria-hidden="true"></i> Avaliações públicas do Google</p>
+    </div>
+    <div class="depoimentos">
+      {% for avaliacao in avaliacoes %}
+        <figure class="depoimento">
+          <div class="depoimento__nota" aria-label="Nota {{ avaliacao.nota }} de 5">
+            {% for i in "12345" %}<i class="{% if forloop.counter <= avaliacao.nota %}ph-fill{% else %}ph{% endif %} ph-star" aria-hidden="true"></i>{% endfor %}
+          </div>
+          <blockquote>{{ avaliacao.texto|truncatechars:280 }}</blockquote>
+          <figcaption>
+            <span class="depoimento__avatar" aria-hidden="true">{{ avaliacao.autor|slice:":1"|upper }}</span>
+            <span><strong>{{ avaliacao.autor }}</strong>{% if avaliacao.data %}<small>{{ avaliacao.data|date:"F \d\e Y" }}</small>{% endif %}</span>
+            <a href="{{ avaliacao.link }}" target="_blank" rel="noopener" class="depoimento__link">Ver no Google <i class="ph ph-arrow-up-right" aria-hidden="true"></i></a>
+          </figcaption>
+        </figure>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if orientacoes %}
+<section class="container secao" id="orientacoes">
+  <div class="secao__topo">
+    <div>
+      <p class="rotulo"><span></span>Orientações</p>
+      <h2 class="secao__titulo">Informação para cuidar melhor de você</h2>
+    </div>
+    <a href="{% url 'site_publico:orientacoes' %}" class="link-seta">Ver todas <i class="ph ph-arrow-right seta" aria-hidden="true"></i></a>
+  </div>
+  <div class="artigos">
+    {% for item in orientacoes %}{% include "site_publico/_artigo.html" %}{% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{% if perguntas %}
+<section class="container secao" id="duvidas">
+  <div class="duvidas">
+    <div>
+      <p class="rotulo"><span></span>Dúvidas frequentes</p>
+      <h2 class="secao__titulo">Perguntas que sempre recebemos</h2>
+      <p class="secao__apoio">Não encontrou o que procurava? Fale com a gente pelo WhatsApp.</p>
+      <a href="https://wa.me/{{ clinica.whatsapp }}" class="botao botao--linha" target="_blank" rel="noopener"><i class="ph ph-whatsapp-logo" aria-hidden="true"></i>Tirar uma dúvida</a>
+    </div>
+    <div class="perguntas">
+      {% for item in perguntas %}
+        <details class="pergunta" {% if forloop.first %}open{% endif %}>
+          <summary>{{ item.pergunta }}<i class="ph ph-plus" aria-hidden="true"></i></summary>
+          <div class="pergunta__resposta">{{ item.resposta|linebreaks }}</div>
+        </details>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="container secao" id="visite">
+  <div class="visite">
+    <div class="visite__texto">
+      <p class="rotulo"><span></span>Visite a clínica</p>
+      <h2 class="secao__titulo">Estamos perto de você</h2>
+      <ul class="visite__lista">
+        <li>
+          <span class="visite__icone"><i class="ph ph-map-pin" aria-hidden="true"></i></span>
+          <span><strong>Endereço</strong>{{ clinica.endereco }}</span>
+        </li>
+        <li>
+          <span class="visite__icone"><i class="ph ph-clock" aria-hidden="true"></i></span>
+          <span><strong>Horário de atendimento</strong>{{ clinica.horario_semana }} · {{ clinica.horario_sabado }}</span>
+        </li>
+        <li>
+          <span class="visite__icone"><i class="ph ph-phone" aria-hidden="true"></i></span>
+          <span><strong>Telefone</strong><a href="tel:{{ clinica.telefone|cut:' '|cut:'('|cut:')'|cut:'-' }}">{{ clinica.telefone }}</a></span>
+        </li>
+      </ul>
+    </div>
+    {% if clinica.mapa_embed %}
+    <div class="visite__mapa">
+      <iframe src="{{ clinica.mapa_embed }}" title="Mapa com a localização da {{ clinica.nome }}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+    </div>
+    {% endif %}
+    <div class="visite__acoes">
+      <a href="https://wa.me/{{ clinica.whatsapp }}" class="botao botao--azul botao--grande botao--bloco" target="_blank" rel="noopener"><i class="ph ph-whatsapp-logo" aria-hidden="true"></i>Falar no WhatsApp</a>
+      {% if clinica.mapa_url %}
+      <a href="{{ clinica.mapa_url }}" class="botao botao--linha botao--grande botao--bloco" target="_blank" rel="noopener"><i class="ph ph-navigation-arrow" aria-hidden="true"></i>Ver rota no mapa</a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

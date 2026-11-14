@@ -1,0 +1,108 @@
+{% load static %}<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}{{ clinica.nome }}{% endblock %}</title>
+  <meta name="description" content="{% block descricao %}Consultas e exames com hora marcada em {{ clinica.cidade }}. Agende online.{% endblock %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700;800;900&family=Inter:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <link rel="stylesheet" href="{% static 'css/site.css' %}">
+  <script src="https://unpkg.com/htmx.org@2.0.4" defer></script>
+  {% block head %}{% endblock %}
+</head>
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+
+  <header class="cabecalho">
+    <div class="container cabecalho__conteudo">
+      <a href="{% url 'site_publico:inicio' %}" class="cabecalho__logo">
+        <img src="{% static 'img/logo.png' %}" alt="{{ clinica.nome }}" width="190" height="65">
+      </a>
+      {% url 'site_publico:inicio' as url_inicio %}
+      <nav class="menu" aria-label="Menu principal">
+        <a href="{{ url_inicio }}" class="{% if request.path == url_inicio %}ativo{% endif %}">Início</a>
+        <a href="{{ url_inicio }}#especialidades">Especialidades</a>
+        <a href="{{ url_inicio }}#equipe">Corpo clínico</a>
+        <a href="{% url 'site_publico:orientacoes' %}" class="{% if 'orientacoes' in request.path %}ativo{% endif %}">Orientações</a>
+        <a href="{{ url_inicio }}#visite">Contato</a>
+      </nav>
+      <div class="cabecalho__acoes">
+        <a href="#" class="botao botao--linha botao--paciente"><i class="ph ph-user-circle" aria-hidden="true"></i>Área do paciente</a>
+        <a href="{{ url_inicio }}#agendar" class="botao botao--marinho"><i class="ph ph-calendar-plus" aria-hidden="true"></i>Agendar<span class="so-desktop">&nbsp;consulta</span></a>
+        <details class="menu-mobile">
+          <summary aria-label="Abrir menu"><i class="ph ph-list"></i></summary>
+          <nav aria-label="Menu">
+            <a href="{{ url_inicio }}">Início</a>
+            <a href="{{ url_inicio }}#especialidades">Especialidades</a>
+            <a href="{{ url_inicio }}#equipe">Corpo clínico</a>
+            <a href="{% url 'site_publico:orientacoes' %}">Orientações</a>
+            <a href="{{ url_inicio }}#visite">Contato</a>
+            <a href="#">Área do paciente</a>
+          </nav>
+        </details>
+      </div>
+    </div>
+  </header>
+
+  {% if messages %}
+    <div class="container mensagens">
+      {% for message in messages %}<div class="mensagem mensagem--{{ message.tags }}">{{ message }}</div>{% endfor %}
+    </div>
+  {% endif %}
+
+  <main>{% block conteudo %}{% endblock %}</main>
+
+  <footer class="rodape" id="contato">
+    <div class="container rodape__grade">
+      <div class="rodape__marca">
+        <span class="rodape__logo"><img src="{% static 'img/logo.png' %}" alt="{{ clinica.nome }}" width="140" height="48"></span>
+        <p>Atendimento médico com hora marcada, equipe qualificada e cuidado em cada detalhe.</p>
+        <div class="rodape__redes">
+          {% if clinica.instagram %}<a href="{{ clinica.instagram }}" aria-label="Instagram" target="_blank" rel="noopener"><i class="ph ph-instagram-logo"></i></a>{% endif %}
+          {% if clinica.facebook %}<a href="{{ clinica.facebook }}" aria-label="Facebook" target="_blank" rel="noopener"><i class="ph ph-facebook-logo"></i></a>{% endif %}
+          <a href="https://wa.me/{{ clinica.whatsapp }}" aria-label="WhatsApp" target="_blank" rel="noopener"><i class="ph ph-whatsapp-logo"></i></a>
+        </div>
+      </div>
+      <div>
+        <h2>Navegação</h2>
+        <ul>
+          <li><a href="{{ url_inicio }}#especialidades">Especialidades</a></li>
+          <li><a href="{{ url_inicio }}#equipe">Corpo clínico</a></li>
+          <li><a href="{% url 'site_publico:orientacoes' %}">Orientações</a></li>
+          <li><a href="{{ url_inicio }}#duvidas">Dúvidas frequentes</a></li>
+          <li><a href="{{ url_inicio }}#agendar">Agendar consulta</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Horários</h2>
+        <ul>
+          <li>{{ clinica.horario_semana }}</li>
+          <li>{{ clinica.horario_sabado }}</li>
+          <li>Domingo: fechado</li>
+        </ul>
+      </div>
+      <div>
+        <h2>Contato</h2>
+        <ul class="rodape__contato">
+          <li><i class="ph ph-phone" aria-hidden="true"></i>{{ clinica.telefone }}</li>
+          <li><i class="ph ph-whatsapp-logo" aria-hidden="true"></i>{{ clinica.whatsapp_exibicao }}</li>
+          <li><i class="ph ph-map-pin" aria-hidden="true"></i>{{ clinica.endereco }}</li>
+        </ul>
+      </div>
+    </div>
+    <div class="rodape__base">
+      <div class="container rodape__base-conteudo">
+        <span>© {% now "Y" %} {{ clinica.nome }}. Todos os direitos reservados.</span>
+        <span>Responsável técnico: {{ clinica.responsavel_tecnico }} · {{ clinica.responsavel_registro }}</span>
+      </div>
+    </div>
+  </footer>
+
+  <a class="whatsapp" href="https://wa.me/{{ clinica.whatsapp }}" target="_blank" rel="noopener" aria-label="Fale conosco pelo WhatsApp">
+    <i class="ph-fill ph-whatsapp-logo" aria-hidden="true"></i><span>Fale conosco</span>
+  </a>
+</body>
+</html>

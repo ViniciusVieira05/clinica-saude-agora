@@ -60,6 +60,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "apps.core.context_processors.clinica",
             ],
         },
     },
@@ -105,3 +106,22 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AGENDAMENTO_ANTECEDENCIA_MIN_HORAS = 2   # RN04: antecedência mínima para o paciente agendar
 AGENDAMENTO_LIMITE_DIAS = 60             # RN04: até quantos dias à frente pode agendar
 CANCELAMENTO_PRAZO_HORAS = 12            # RN05: prazo para o paciente cancelar ou remarcar pelo site
+
+# Dados da clínica exibidos no site (troque pelos dados reais)
+CLINICA = {
+    "nome": "Saúde Agora",
+    "cidade": "[Cidade]",
+    "endereco": "[Endereço completo]",
+    "bairro": "[Bairro]",
+    "telefone": "(00) 0000-0000",
+    "whatsapp": "5500000000000",           # só números, com 55 + DDD
+    "whatsapp_exibicao": "(00) 00000-0000",
+    "instagram": "",                       # ex.: https://instagram.com/saudeagora
+    "facebook": "",
+    "horario_semana": "Seg a Sex, 7h às 18h",
+    "horario_sabado": "Sáb, 7h às 12h",
+    "responsavel_tecnico": "[Nome do médico]",
+    "responsavel_registro": "CRM [número]",
+    "mapa_url": "",                        # link do Google Maps
+    "foto_fachada": "img/clinica.jpg",     # deixe "" para mostrar o espaço vazio
+}

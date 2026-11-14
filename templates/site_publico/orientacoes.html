@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block titulo %}Orientações · {{ clinica.nome }}{% endblock %}
+{% block descricao %}Orientações de saúde e preparo para exames da {{ clinica.nome }}.{% endblock %}
+
+{% block conteudo %}
+<section class="pagina-topo">
+  <div class="container">
+    <p class="rotulo"><span></span>Orientações</p>
+    <h1 class="pagina-topo__titulo">Informação para cuidar melhor de você</h1>
+    <p class="pagina-topo__texto">Preparo para exames, primeira consulta e cuidados do dia a dia, escritos pela nossa equipe.</p>
+  </div>
+</section>
+
+<section class="container secao">
+  {% if pagina.object_list %}
+    <div class="artigos">
+      {% for item in pagina %}{% include "site_publico/_artigo.html" %}{% endfor %}
+    </div>
+    {% if pagina.has_other_pages %}
+      <nav class="paginacao" aria-label="Paginação">
+        {% if pagina.has_previous %}<a href="?pagina={{ pagina.previous_page_number }}" class="botao botao--linha"><i class="ph ph-arrow-left"></i>Anteriores</a>{% endif %}
+        <span>Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}</span>
+        {% if pagina.has_next %}<a href="?pagina={{ pagina.next_page_number }}" class="botao botao--linha">Próximas<i class="ph ph-arrow-right"></i></a>{% endif %}
+      </nav>
+    {% endif %}
+  {% else %}
+    <p class="vazio">Em breve publicaremos orientações por aqui.</p>
+  {% endif %}
+</section>
+{% endblock %}
