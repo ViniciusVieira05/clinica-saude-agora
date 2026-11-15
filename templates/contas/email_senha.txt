@@ -1,0 +1,8 @@
+Olá, {{ user.nome }}.
+
+Recebemos um pedido para criar uma nova senha na sua conta da Saúde Agora.
+Clique no link abaixo (ele vale por 3 dias):
+
+{{ protocol }}://{{ domain }}{% url 'contas:senha_nova' uidb64=uid token=token %}
+
+Se não foi você, ignore este e-mail. Sua senha continua a mesma.

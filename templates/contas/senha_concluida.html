@@ -1,0 +1,6 @@
+{% extends "contas/_layout.html" %}
+{% block cartao %}
+<h2>Senha alterada</h2>
+<p class="conta__sub">Pronto! Já pode entrar com a senha nova.</p>
+<a href="{% url 'contas:entrar' %}" class="botao botao--azul botao--grande botao--bloco">Entrar</a>
+{% endblock %}

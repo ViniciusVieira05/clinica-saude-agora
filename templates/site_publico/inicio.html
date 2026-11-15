@@ -9,7 +9,7 @@
       <h1 class="hero__titulo anim d2">Atendimento de qualidade, <em>perto de você.</em></h1>
       <p class="hero__texto anim d3">Consultas e exames com hora marcada. Escolha o profissional e o horário direto pelo site, sem precisar esperar resposta no WhatsApp.</p>
       <div class="hero__acoes anim d4">
-        <a href="#agendar" class="botao botao--azul botao--grande">Agendar minha consulta <i class="ph ph-arrow-right seta" aria-hidden="true"></i></a>
+        <a href="{% url 'agendamentos:agendar' %}" class="botao botao--azul botao--grande">Agendar minha consulta <i class="ph ph-arrow-right seta" aria-hidden="true"></i></a>
         <a href="#especialidades" class="botao botao--linha botao--grande">Ver especialidades</a>
       </div>
     </div>
@@ -38,12 +38,12 @@
 
 <div class="container">
   <nav class="atalhos anim d5" aria-label="Acesso rápido">
-    <a href="#agendar" class="atalho atalho--marinho">
+    <a href="{% url 'agendamentos:agendar' %}" class="atalho atalho--marinho">
       <i class="ph ph-calendar-check" aria-hidden="true"></i>
       <strong>Agende sua consulta</strong>
       <span>Escolha o profissional e o horário <i class="ph ph-arrow-right seta" aria-hidden="true"></i></span>
     </a>
-    <a href="#" class="atalho atalho--azul">
+    <a href="{% url 'agendamentos:meus' %}" class="atalho atalho--azul">
       <i class="ph ph-clipboard-text" aria-hidden="true"></i>
       <strong>Meus agendamentos</strong>
       <span>Remarque ou cancele <i class="ph ph-arrow-right seta" aria-hidden="true"></i></span>
@@ -66,7 +66,7 @@
   {% if especialidades %}
     <div class="cartoes">
       {% for especialidade in especialidades %}
-        <a href="#agendar" class="cartao">
+        <a href="{% url 'agendamentos:agendar' %}?especialidade={{ especialidade.pk }}" class="cartao">
           <span class="cartao__icone"><i class="ph {{ especialidade.nome|icone_especialidade }}" aria-hidden="true"></i></span>
           <strong>{{ especialidade.nome }}</strong>
           <small>{{ especialidade.descricao|default:"Consultas com hora marcada"|truncatechars:70 }}</small>
@@ -114,7 +114,7 @@
       <span class="painel-agendar__icone"><i class="ph ph-calendar-plus" aria-hidden="true"></i></span>
       <h3>Pronto para agendar?</h3>
       <p>O agendamento online leva menos de um minuto e você recebe a confirmação na hora.</p>
-      <a href="#" class="botao botao--azul botao--grande botao--bloco">Começar agendamento <i class="ph ph-arrow-right seta" aria-hidden="true"></i></a>
+      <a href="{% url 'agendamentos:agendar' %}" class="botao botao--azul botao--grande botao--bloco">Começar agendamento <i class="ph ph-arrow-right seta" aria-hidden="true"></i></a>
       <p class="painel-agendar__lgpd"><i class="ph ph-lock-simple" aria-hidden="true"></i>Seus dados são protegidos conforme a LGPD</p>
     </div>
   </div>

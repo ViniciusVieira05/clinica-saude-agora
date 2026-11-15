@@ -1,0 +1,13 @@
+Olá, {{ consulta.paciente.nome }}.
+
+Sua consulta na {{ clinica.nome }} está agendada:
+
+Data: {{ consulta.inicio|date:"l, d/m/Y" }}
+Horário: {{ consulta.inicio|time:"H:i" }}
+Profissional: {{ consulta.profissional.nome }}
+Serviço: {{ consulta.servico.nome }}
+Valor: R$ {{ consulta.preco|floatformat:2 }}
+
+Se precisar remarcar ou cancelar, faça pela sua conta no site ou fale com a recepção.
+
+Até breve!

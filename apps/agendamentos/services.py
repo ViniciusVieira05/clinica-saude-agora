@@ -137,3 +137,11 @@ def marcar_falta(consulta):
     consulta.status = Consulta.Status.FALTOU
     consulta.save(update_fields=["status", "atualizado_em"])
     return consulta
+
+
+def pode_alterar_pelo_site(consulta):
+    """O paciente pode remarcar/cancelar sozinho? (RN05)"""
+    if consulta.status not in (Consulta.Status.AGENDADA, Consulta.Status.CONFIRMADA):
+        return False
+    limite = consulta.inicio - timedelta(hours=settings.CANCELAMENTO_PRAZO_HORAS)
+    return timezone.now() <= limite

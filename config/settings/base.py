@@ -110,12 +110,12 @@ CANCELAMENTO_PRAZO_HORAS = 12            # RN05: prazo para o paciente cancelar 
 # Dados da clínica exibidos no site (troque pelos dados reais)
 CLINICA = {
     "nome": "Saúde Agora",
-    "cidade": "[Cidade]",
+    "cidade": "[Monte Alegre do Piauí]",
     "endereco": "[Endereço completo]",
     "bairro": "[Bairro]",
-    "telefone": "(00) 0000-0000",
-    "whatsapp": "5500000000000",           # só números, com 55 + DDD
-    "whatsapp_exibicao": "(00) 00000-0000",
+    "telefone": "(89) 98136-5009",
+    "whatsapp": "5589981365009",           # só números, com 55 + DDD
+    "whatsapp_exibicao": "(89) 98136-5009",
     "instagram": "",                       # ex.: https://instagram.com/saudeagora
     "facebook": "",
     "horario_semana": "Seg a Sex, 7h às 18h",
@@ -125,3 +125,9 @@ CLINICA = {
     "mapa_url": "",                        # link do Google Maps
     "foto_fachada": "img/clinica.jpg",     # deixe "" para mostrar o espaço vazio
 }
+
+# Login
+LOGIN_URL = "contas:entrar"
+LOGIN_REDIRECT_URL = "site_publico:inicio"
+LOGOUT_REDIRECT_URL = "site_publico:inicio"
+DEFAULT_FROM_EMAIL = "Saúde Agora <nao-responda@saudeagora.com.br>"

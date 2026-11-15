@@ -1,0 +1,30 @@
+{% extends "contas/_layout.html" %}
+{% block titulo %}Criar conta · {{ clinica.nome }}{% endblock %}
+{% block lado_titulo %}Crie sua conta em 1 minuto.{% endblock %}
+{% block cartao %}
+<h2>Criar conta</h2>
+<p class="conta__sub">Seus dados ficam protegidos e só são usados para o seu atendimento.</p>
+<form method="post" novalidate>
+  {% csrf_token %}
+  {% include "includes/campo.html" with campo=form.nome %}
+  <div class="campos-2">
+    {% include "includes/campo.html" with campo=form.cpf %}
+    {% include "includes/campo.html" with campo=form.data_nascimento %}
+  </div>
+  <div class="campos-2">
+    {% include "includes/campo.html" with campo=form.telefone %}
+    {% include "includes/campo.html" with campo=form.email %}
+  </div>
+  <div class="campos-2">
+    {% include "includes/campo.html" with campo=form.senha1 %}
+    {% include "includes/campo.html" with campo=form.senha2 %}
+  </div>
+  <div class="campo campo--check{% if form.aceite_termos.errors %} campo--erro{% endif %}">
+    <label>{{ form.aceite_termos }} <span>{{ form.aceite_termos.label }}</span></label>
+    {% for erro in form.aceite_termos.errors %}<small class="campo__erro">{{ erro }}</small>{% endfor %}
+  </div>
+  <input type="hidden" name="next" value="{{ next }}">
+  <button type="submit" class="botao botao--azul botao--grande botao--bloco">Criar minha conta</button>
+</form>
+<p class="conta__rodape">Já tem conta? <a href="{% url 'contas:entrar' %}">Entrar</a></p>
+{% endblock %}

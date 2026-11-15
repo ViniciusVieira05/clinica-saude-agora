@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titulo %}Agendar consulta · {{ clinica.nome }}{% endblock %}
+{% block descricao %}Veja os horários livres e agende sua consulta online na {{ clinica.nome }}.{% endblock %}
+
+{% block conteudo %}
+<div id="agenda">
+  <section class="agenda-topo">
+    <div class="container agenda-topo__conteudo">
+      <div>
+        <h1 class="agenda-topo__titulo">Agende sua consulta</h1>
+        <p>Escolha um horário livre na agenda dos nossos profissionais.</p>
+      </div>
+      <form class="filtros" method="get" action="{% url 'agendamentos:agendar' %}"
+            hx-get="{% url 'agendamentos:agendar' %}" hx-trigger="change" hx-target="#agenda"
+            hx-select="#agenda" hx-swap="outerHTML" hx-push-url="true">
+        <label class="filtro">
+          <span>Especialidade</span>
+          <select name="especialidade">
+            <option value="">Todas</option>
+            {% for e in especialidades %}<option value="{{ e.pk }}" {% if e == especialidade %}selected{% endif %}>{{ e.nome }}</option>{% endfor %}
+          </select>
+        </label>
+        {% if servicos|length > 1 %}
+        <label class="filtro">
+          <span>Tipo de atendimento</span>
+          <select name="servico">
+            <option value="">Todos</option>
+            {% for s in servicos %}<option value="{{ s.pk }}" {% if s == servico %}selected{% endif %}>{{ s.nome }}</option>{% endfor %}
+          </select>
+        </label>
+        {% endif %}
+        <noscript><button type="submit" class="botao botao--linha">Filtrar</button></noscript>
+      </form>
+    </div>
+  </section>
+
+  <div class="container">
+    <form class="agenda" method="post" action="{% url 'agendamentos:confirmar' %}" data-escolha="{{ escolha }}">
+      {% csrf_token %}
+      {% if especialidade %}<input type="hidden" name="especialidade" value="{{ especialidade.pk }}">{% endif %}
+      {% if servico %}<input type="hidden" name="servico" value="{{ servico.pk }}">{% endif %}
+
+      {% for linha in linhas %}
+        {% include "agendamentos/_cartao_profissional.html" %}
+      {% empty %}
+        <p class="vazio">O agendamento online ainda não está disponível. Fale com a recepção pelo WhatsApp.</p>
+      {% endfor %}
+
+      <div class="barra" role="region" aria-label="Horário escolhido">
+        <div class="container barra__conteudo">
+          <div class="barra__texto">
+            <small>Horário escolhido</small>
+            <strong data-resumo-alvo>—</strong>
+          </div>
+          <button type="submit" class="botao botao--azul botao--grande">
+            {% if user.is_authenticated %}Confirmar agendamento{% else %}Continuar{% endif %}
+            <i class="ph ph-arrow-right" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="{% static 'js/agenda.js' %}"></script>
+{% endblock %}

@@ -3,6 +3,7 @@ from decimal import Decimal
 
 from django.core.exceptions import ValidationError
 from django.test import TestCase, override_settings
+from django.urls import reverse
 from django.utils import timezone
 
 from apps.agenda.models import Bloqueio, HorarioAtendimento
@@ -84,3 +85,118 @@ class AgendamentoTests(TestCase):
         self.servico.save()
         consulta.refresh_from_db()
         self.assertEqual(consulta.preco, Decimal("150"))
+
+
+class TelaAgendamentoTests(TestCase):
+    """Fluxo do paciente no site."""
+
+    @classmethod
+    def setUpTestData(cls):
+        esp = Especialidade.objects.create(nome="Clínico geral")
+        cls.esp = esp
+        cls.servico = Servico.objects.create(especialidade=esp, nome="Consulta", duracao_min=30, preco=Decimal("150"))
+        medico = Usuario.objects.create_user("medico2@teste.com", "senha-forte-123", nome="Dra. Lia", tipo="profissional")
+        cls.prof = Profissional.objects.create(usuario=medico, registro="999")
+        cls.prof.especialidades.add(esp)
+        cls.dia = timezone.localdate() + timedelta(days=3)
+        HorarioAtendimento.objects.create(profissional=cls.prof, dia_semana=cls.dia.weekday(), hora_inicio=time(8), hora_fim=time(10))
+        cls.usuario = Usuario.objects.create_user("paciente@teste.com", "Senha-forte-2026", nome="Rui Alves")
+        Paciente.objects.create(usuario=cls.usuario, nome="Rui Alves", cpf="52998224725", data_nascimento=date(1990, 1, 1), telefone="89999999999")
+
+    def escolha(self, hora="09:00"):
+        return f"{self.prof.pk}|{self.servico.pk}|{self.dia.isoformat()}T{hora}"
+
+    def test_mostra_profissional_e_horarios(self):
+        resposta = self.client.get(reverse("agendamentos:agendar"))
+        self.assertContains(resposta, "Dra. Lia")
+        self.assertContains(resposta, "Clínico geral")
+        self.assertContains(resposta, "08:30")
+
+    def test_filtra_por_especialidade(self):
+        outra = Especialidade.objects.create(nome="Pediatria")
+        resposta = self.client.get(reverse("agendamentos:agendar"), {"especialidade": outra.pk})
+        self.assertContains(resposta, "Dra. Lia")  # filtro inválido (sem agenda) é ignorado
+
+    def test_sem_login_vai_para_o_login_guardando_a_escolha(self):
+        resposta = self.client.post(reverse("agendamentos:confirmar"), {"escolha": self.escolha()})
+        self.assertEqual(resposta.status_code, 302)
+        self.assertTrue(resposta.url.startswith(reverse("contas:entrar")))
+        self.assertIn("escolha", resposta.url)
+        self.assertFalse(Consulta.objects.exists())
+
+    def test_confirmar_cria_consulta(self):
+        self.client.force_login(self.usuario)
+        resposta = self.client.post(reverse("agendamentos:confirmar"), {"escolha": self.escolha()})
+        consulta = Consulta.objects.get()
+        self.assertRedirects(resposta, reverse("agendamentos:confirmado", args=[consulta.pk]))
+        self.assertEqual(consulta.origem, "site")
+        self.assertEqual(consulta.paciente.usuario, self.usuario)
+
+    def test_confirmacao_tem_botao_do_whatsapp(self):
+        self.client.force_login(self.usuario)
+        self.client.post(reverse("agendamentos:confirmar"), {"escolha": self.escolha()})
+        resposta = self.client.get(reverse("agendamentos:confirmado", args=[Consulta.objects.get().pk]))
+        self.assertContains(resposta, "wa.me/")
+        self.assertContains(resposta, "Rui%20Alves")
+
+    def test_horario_ocupado_volta_com_erro(self):
+        self.client.force_login(self.usuario)
+        self.client.post(reverse("agendamentos:confirmar"), {"escolha": self.escolha()})
+        resposta = self.client.post(reverse("agendamentos:confirmar"), {"escolha": self.escolha()}, follow=True)
+        self.assertEqual(Consulta.objects.count(), 1)
+        self.assertContains(resposta, "não está disponível")
+
+    def test_outro_paciente_nao_ve_a_confirmacao(self):
+        self.client.force_login(self.usuario)
+        self.client.post(reverse("agendamentos:confirmar"), {"escolha": self.escolha()})
+        outro = Usuario.objects.create_user("outro@teste.com", "Senha-forte-2026", nome="Outro")
+        self.client.force_login(outro)
+        resposta = self.client.get(reverse("agendamentos:confirmado", args=[Consulta.objects.get().pk]))
+        self.assertEqual(resposta.status_code, 404)
+
+
+class MeusAgendamentosTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        esp = Especialidade.objects.create(nome="Clínico geral")
+        cls.servico = Servico.objects.create(especialidade=esp, nome="Consulta", duracao_min=30, preco=Decimal("150"))
+        medico = Usuario.objects.create_user("medico3@teste.com", "senha-forte-123", nome="Dr. Paulo", tipo="profissional")
+        cls.prof = Profissional.objects.create(usuario=medico, registro="777")
+        cls.prof.especialidades.add(esp)
+        cls.dia = timezone.localdate() + timedelta(days=3)
+        HorarioAtendimento.objects.create(profissional=cls.prof, dia_semana=cls.dia.weekday(), hora_inicio=time(8), hora_fim=time(12))
+        cls.usuario = Usuario.objects.create_user("bia@teste.com", "Senha-forte-2026", nome="Bia Lopes")
+        cls.paciente = Paciente.objects.create(usuario=cls.usuario, nome="Bia Lopes", cpf="52998224725", data_nascimento=date(1990, 1, 1), telefone="89999999999")
+
+    def setUp(self):
+        self.consulta = services.agendar(paciente=self.paciente, profissional=self.prof, servico=self.servico, inicio=_aware(self.dia, time(9)))
+        self.client.force_login(self.usuario)
+
+    def test_lista_proximas(self):
+        resposta = self.client.get(reverse("agendamentos:meus"))
+        self.assertContains(resposta, "Dr. Paulo")
+        self.assertContains(resposta, "Remarcar")
+
+    def test_cancelar(self):
+        self.client.post(reverse("agendamentos:cancelar", args=[self.consulta.pk]))
+        self.consulta.refresh_from_db()
+        self.assertEqual(self.consulta.status, "cancelada")
+
+    def test_nao_cancela_consulta_de_outro_paciente(self):
+        outro = Usuario.objects.create_user("x@teste.com", "Senha-forte-2026", nome="X")
+        self.client.force_login(outro)
+        resposta = self.client.post(reverse("agendamentos:cancelar", args=[self.consulta.pk]))
+        self.assertEqual(resposta.status_code, 404)
+
+    @override_settings(CANCELAMENTO_PRAZO_HORAS=24 * 10)
+    def test_fora_do_prazo_nao_cancela(self):
+        self.client.post(reverse("agendamentos:cancelar", args=[self.consulta.pk]))
+        self.consulta.refresh_from_db()
+        self.assertEqual(self.consulta.status, "agendada")
+
+    def test_remarcar(self):
+        novo = f"{self.prof.pk}|{self.servico.pk}|{self.dia.isoformat()}T10:30"
+        resposta = self.client.post(reverse("agendamentos:remarcar", args=[self.consulta.pk]), {"escolha": novo})
+        self.assertRedirects(resposta, reverse("agendamentos:meus"))
+        self.consulta.refresh_from_db()
+        self.assertEqual(timezone.localtime(self.consulta.inicio).strftime("%H:%M"), "10:30")

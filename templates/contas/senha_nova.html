@@ -1,0 +1,16 @@
+{% extends "contas/_layout.html" %}
+{% block cartao %}
+{% if validlink %}
+  <h2>Crie uma senha nova</h2>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% include "includes/campo.html" with campo=form.new_password1 %}
+    {% include "includes/campo.html" with campo=form.new_password2 %}
+    <button type="submit" class="botao botao--azul botao--grande botao--bloco">Salvar senha</button>
+  </form>
+{% else %}
+  <h2>Link expirado</h2>
+  <p class="conta__sub">Este link já foi usado ou expirou. Peça um novo.</p>
+  <a href="{% url 'contas:senha_esqueci' %}" class="botao botao--azul botao--bloco">Pedir novo link</a>
+{% endif %}
+{% endblock %}

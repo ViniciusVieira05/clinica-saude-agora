@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block conteudo %}
+<section class="conta">
+  <div class="container conta__grade">
+    <div class="conta__lado">
+      <p class="rotulo"><span></span>Área do paciente</p>
+      <h1 class="conta__titulo">{% block lado_titulo %}Sua saúde, organizada.{% endblock %}</h1>
+      <ul class="conta__lista">
+        <li><i class="ph ph-calendar-check" aria-hidden="true"></i>Agende consultas a qualquer hora</li>
+        <li><i class="ph ph-arrows-clockwise" aria-hidden="true"></i>Remarque ou cancele pelo site</li>
+        <li><i class="ph ph-whatsapp-logo" aria-hidden="true"></i>Receba lembretes no WhatsApp</li>
+      </ul>
+    </div>
+    <div class="conta__cartao">
+      {% block cartao %}{% endblock %}
+    </div>
+  </div>
+</section>
+{% endblock %}

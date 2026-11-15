@@ -1,0 +1,6 @@
+{% extends "contas/_layout.html" %}
+{% block cartao %}
+<h2>Confira seu e-mail</h2>
+<p class="conta__sub">Se o e-mail informado tiver conta, você vai receber um link para criar uma senha nova. Veja também a caixa de spam.</p>
+<a href="{% url 'contas:entrar' %}" class="botao botao--linha botao--bloco">Voltar para entrar</a>
+{% endblock %}

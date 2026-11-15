@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load tz %}
+{% block titulo %}Consulta agendada · {{ clinica.nome }}{% endblock %}
+
+{% block conteudo %}
+<section class="confirmado">
+  <div class="container confirmado__container">
+    <p class="rotulo"><span></span>Agendamento nº {{ consulta.pk }}</p>
+    <h1 class="pagina-topo__titulo">Seu horário está reservado</h1>
+    <p class="confirmado__texto">Falta só um passo: envie a confirmação para a clínica pelo WhatsApp. A recepção responde por lá mesmo.</p>
+
+    <div class="confirmado__cartao">
+      <div class="confirmado__data">
+        <small>{{ consulta.inicio|date:"l"|capfirst }}</small>
+        <strong>{{ consulta.inicio|date:"d" }}</strong>
+        <small>{{ consulta.inicio|date:"F" }}</small>
+      </div>
+      <dl>
+        <div><dt>Horário</dt><dd>{{ consulta.inicio|time:"H:i" }} às {{ consulta.fim|time:"H:i" }}</dd></div>
+        <div><dt>Profissional</dt><dd>{{ consulta.profissional.nome }}</dd></div>
+        <div><dt>Serviço</dt><dd>{{ consulta.servico.nome }}</dd></div>
+        <div><dt>Local</dt><dd>{{ clinica.endereco }}</dd></div>
+        <div><dt>Valor</dt><dd>R$ {{ consulta.preco|floatformat:2 }}</dd></div>
+      </dl>
+    </div>
+
+    <div class="confirmado__acoes">
+      <a class="botao botao--whatsapp botao--grande" target="_blank" rel="noopener"
+         href="https://wa.me/{{ clinica.whatsapp }}?text={{ mensagem_whatsapp|urlencode }}">
+        <i class="ph-fill ph-whatsapp-logo" aria-hidden="true"></i>Enviar confirmação no WhatsApp
+      </a>
+      <a class="botao botao--linha botao--grande" target="_blank" rel="noopener"
+         href="https://calendar.google.com/calendar/render?action=TEMPLATE&text={{ 'Consulta - '|add:clinica.nome|urlencode }}&dates={% timezone 'UTC' %}{{ consulta.inicio|date:'Ymd\THis\Z' }}/{{ consulta.fim|date:'Ymd\THis\Z' }}{% endtimezone %}&details={{ consulta.servico.nome|add:' com '|add:consulta.profissional.nome|urlencode }}&location={{ clinica.endereco|urlencode }}">
+        <i class="ph ph-calendar-plus" aria-hidden="true"></i>Salvar na minha agenda
+      </a>
+    </div>
+    <p class="confirmado__nota">Precisa remarcar ou cancelar? Faça até {{ prazo_cancelamento }} horas antes, em <a href="{% url 'agendamentos:meus' %}">Meus agendamentos</a> ou pelo WhatsApp.</p>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "contas/_layout.html" %}
+{% block titulo %}Entrar · {{ clinica.nome }}{% endblock %}
+{% block cartao %}
+<h2>Entrar</h2>
+<p class="conta__sub">Use o e-mail e a senha da sua conta.</p>
+<form method="post" novalidate>
+  {% csrf_token %}
+  {% if form.non_field_errors %}<div class="mensagem mensagem--error">{{ form.non_field_errors.0 }}</div>{% endif %}
+  {% include "includes/campo.html" with campo=form.username %}
+  {% include "includes/campo.html" with campo=form.password %}
+  <a class="conta__link-direita" href="{% url 'contas:senha_esqueci' %}">Esqueci minha senha</a>
+  <input type="hidden" name="next" value="{{ next }}">
+  <button type="submit" class="botao botao--azul botao--grande botao--bloco">Entrar</button>
+</form>
+<p class="conta__rodape">Ainda não tem conta? <a href="{% url 'contas:criar' %}{% if next %}?next={{ next|urlencode }}{% endif %}">Criar conta</a></p>
+{% endblock %}

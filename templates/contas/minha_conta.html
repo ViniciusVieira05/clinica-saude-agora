@@ -1,0 +1,26 @@
+{% extends "contas/_layout.html" %}
+{% block titulo %}Minha conta · {{ clinica.nome }}{% endblock %}
+{% block lado_titulo %}Olá, {{ request.user.nome }}.{% endblock %}
+{% block cartao %}
+<h2>Meus dados</h2>
+<dl class="conta__dados">
+  <div><dt>Nome</dt><dd>{{ paciente.nome }}</dd></div>
+  <div><dt>CPF</dt><dd>{{ paciente.cpf_formatado }}</dd></div>
+  <div><dt>E-mail de acesso</dt><dd>{{ request.user.email }}</dd></div>
+</dl>
+<p class="conta__sub">Para mudar nome ou CPF, fale com a recepção.</p>
+<form method="post" novalidate>
+  {% csrf_token %}
+  {% include "includes/campo.html" with campo=form.telefone %}
+  <div class="campos-2">
+    {% include "includes/campo.html" with campo=form.cep %}
+    {% include "includes/campo.html" with campo=form.cidade %}
+  </div>
+  {% include "includes/campo.html" with campo=form.endereco %}
+  <div class="campos-2">
+    {% include "includes/campo.html" with campo=form.bairro %}
+    {% include "includes/campo.html" with campo=form.uf %}
+  </div>
+  <button type="submit" class="botao botao--azul botao--grande botao--bloco">Salvar alterações</button>
+</form>
+{% endblock %}

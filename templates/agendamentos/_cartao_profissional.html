@@ -1,0 +1,50 @@
+        <article class="prof">
+          <div class="prof__info">
+            {% if linha.profissional.foto %}
+              <img src="{{ linha.profissional.foto.url }}" alt="" class="prof__foto">
+            {% else %}
+              <span class="prof__foto prof__foto--inicial" aria-hidden="true">{{ linha.profissional.nome|slice:":1" }}</span>
+            {% endif %}
+            <div class="prof__texto">
+              <h2>{{ linha.profissional.nome }}</h2>
+              <p class="prof__esp">{% for e in linha.profissional.especialidades.all %}{{ e.nome }}{% if not forloop.last %} · {% endif %}{% endfor %}</p>
+              <p class="prof__reg">{{ linha.profissional.registro_formatado }}</p>
+              <ul class="prof__detalhes">
+                <li><i class="ph ph-stethoscope" aria-hidden="true"></i>{{ linha.servico.nome }}</li>
+                <li><i class="ph ph-clock" aria-hidden="true"></i>{{ linha.servico.duracao_min }} minutos</li>
+                <li><i class="ph ph-money" aria-hidden="true"></i>R$ {{ linha.servico.preco|floatformat:2 }}</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="prof__agenda" data-agenda>
+            {% if linha.dias %}
+              <div class="prof__dias" role="tablist" aria-label="Dias com horário livre">
+                {% for d in linha.dias %}
+                  <button type="button" class="dia-pill" role="tab" data-dia="{{ d.data|date:'Y-m-d' }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
+                    <small>{{ d.data|date:"D" }}</small>
+                    <strong>{{ d.data|date:"d/m" }}</strong>
+                    <span>{{ d.total }} horário{{ d.total|pluralize }}</span>
+                  </button>
+                {% endfor %}
+              </div>
+              {% for d in linha.dias %}
+                <div class="prof__painel" role="tabpanel" data-dia="{{ d.data|date:'Y-m-d' }}" {% if not forloop.first %}hidden{% endif %}>
+                  <p class="prof__dia-titulo">{{ d.data|date:"l, d \d\e F"|capfirst }}</p>
+                  {% for periodo in d.periodos %}
+                    <div class="periodo">
+                      <h3><i class="ph {{ periodo.icone }}" aria-hidden="true"></i>{{ periodo.nome }}</h3>
+                      <div class="horas">
+                        {% for h in periodo.horarios %}
+                          <label class="hora"><input type="radio" name="escolha" value="{{ linha.profissional.pk }}|{{ linha.servico.pk }}|{{ h|date:'Y-m-d\TH:i' }}" data-resumo="{{ h|date:'D, d/m'|capfirst }} às {{ h|time:'H:i' }} · {{ linha.profissional.nome }}"><span>{{ h|time:"H:i" }}</span></label>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+              {% endfor %}
+            {% else %}
+              <p class="prof__aviso"><i class="ph ph-calendar-x" aria-hidden="true"></i>Sem horários livres nos próximos dias. Fale com a recepção pelo WhatsApp.</p>
+            {% endif %}
+          </div>
+        </article>

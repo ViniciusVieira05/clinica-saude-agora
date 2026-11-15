@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block titulo %}Meus agendamentos · {{ clinica.nome }}{% endblock %}
+
+{% block conteudo %}
+<section class="agenda-topo">
+  <div class="container agenda-topo__conteudo">
+    <div>
+      <h1 class="agenda-topo__titulo">Meus agendamentos</h1>
+      <p>Remarque ou cancele até {{ prazo_cancelamento }} horas antes da consulta.</p>
+    </div>
+    <a href="{% url 'agendamentos:agendar' %}" class="botao botao--azul"><i class="ph ph-calendar-plus" aria-hidden="true"></i>Agendar nova consulta</a>
+  </div>
+</section>
+
+<div class="container meus">
+  <h2 class="meus__titulo">Próximas consultas</h2>
+  {% for consulta in proximas %}
+    <article class="consulta">
+      <div class="consulta__data">
+        <small>{{ consulta.inicio|date:"D"|capfirst }}</small>
+        <strong>{{ consulta.inicio|date:"d" }}</strong>
+        <small>{{ consulta.inicio|date:"M"|capfirst }}</small>
+      </div>
+      <div class="consulta__info">
+        <div class="consulta__linha">
+          <h3>{{ consulta.inicio|time:"H:i" }} · {{ consulta.servico.nome }}</h3>
+          <span class="status status--{{ consulta.status }}">{{ consulta.get_status_display }}</span>
+        </div>
+        <p>{{ consulta.profissional.nome }} · {{ consulta.servico.especialidade.nome }}</p>
+        <p class="consulta__extra">Agendamento nº {{ consulta.pk }} · R$ {{ consulta.preco|floatformat:2 }}</p>
+      </div>
+      <div class="consulta__acoes">
+        {% if consulta.pode_alterar %}
+          <a href="{% url 'agendamentos:remarcar' consulta.pk %}" class="botao botao--linha"><i class="ph ph-arrows-clockwise" aria-hidden="true"></i>Remarcar</a>
+          <form method="post" action="{% url 'agendamentos:cancelar' consulta.pk %}" onsubmit="return confirm('Cancelar a consulta de {{ consulta.inicio|date:"d/m" }} às {{ consulta.inicio|time:"H:i" }}?');">
+            {% csrf_token %}
+            <button type="submit" class="botao botao--texto">Cancelar</button>
+          </form>
+        {% else %}
+          <a href="https://wa.me/{{ clinica.whatsapp }}?text={{ consulta.mensagem_whatsapp|urlencode }}" class="botao botao--linha" target="_blank" rel="noopener"><i class="ph ph-whatsapp-logo" aria-hidden="true"></i>Falar com a recepção</a>
+          <small class="consulta__nota">Faltam menos de {{ prazo_cancelamento }}h: alterações só pela recepção.</small>
+        {% endif %}
+      </div>
+    </article>
+  {% empty %}
+    <div class="meus__vazio">
+      <i class="ph ph-calendar-blank" aria-hidden="true"></i>
+      <p>Você não tem consultas marcadas.</p>
+      <a href="{% url 'agendamentos:agendar' %}" class="botao botao--azul">Agendar consulta</a>
+    </div>
+  {% endfor %}
+
+  {% if historico %}
+    <h2 class="meus__titulo meus__titulo--historico">Histórico</h2>
+    <ul class="historico">
+      {% for consulta in historico %}
+        <li>
+          <span class="historico__data">{{ consulta.inicio|date:"d/m/Y" }} · {{ consulta.inicio|time:"H:i" }}</span>
+          <span class="historico__info">{{ consulta.servico.nome }} com {{ consulta.profissional.nome }}</span>
+          <span class="status status--{{ consulta.status }}">{{ consulta.get_status_display }}</span>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+</div>
+{% endblock %}

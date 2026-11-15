@@ -1,0 +1,12 @@
+{% extends "contas/_layout.html" %}
+{% block titulo %}Recuperar senha · {{ clinica.nome }}{% endblock %}
+{% block cartao %}
+<h2>Esqueci minha senha</h2>
+<p class="conta__sub">Informe o e-mail da conta e enviaremos um link para criar uma senha nova.</p>
+<form method="post" novalidate>
+  {% csrf_token %}
+  {% include "includes/campo.html" with campo=form.email %}
+  <button type="submit" class="botao botao--azul botao--grande botao--bloco">Enviar link</button>
+</form>
+<p class="conta__rodape"><a href="{% url 'contas:entrar' %}">Voltar para entrar</a></p>
+{% endblock %}

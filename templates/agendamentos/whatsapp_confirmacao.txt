@@ -1,0 +1,8 @@
+Olá! Acabei de agendar pelo site da {{ clinica.nome }}.
+
+*{{ consulta.servico.nome }}* com {{ consulta.profissional.nome }}
+Dia: {{ consulta.inicio|date:"l, d/m" }} às {{ consulta.inicio|time:"H:i" }}
+Paciente: {{ consulta.paciente.nome }}
+Código do agendamento: {{ consulta.pk }}
+
+Podem confirmar, por favor?

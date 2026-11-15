@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titulo %}Remarcar consulta · {{ clinica.nome }}{% endblock %}
+
+{% block conteudo %}
+<section class="agenda-topo">
+  <div class="container agenda-topo__conteudo">
+    <div>
+      <a href="{% url 'agendamentos:meus' %}" class="link-seta link-seta--voltar"><i class="ph ph-arrow-left" aria-hidden="true"></i> Meus agendamentos</a>
+      <h1 class="agenda-topo__titulo">Remarcar consulta</h1>
+      <p>Horário atual: <strong>{{ consulta.inicio|date:"l, d/m"|capfirst }} às {{ consulta.inicio|time:"H:i" }}</strong>. Escolha o novo horário abaixo.</p>
+    </div>
+  </div>
+</section>
+
+<div class="container">
+  <form class="agenda" method="post" action="{% url 'agendamentos:remarcar' consulta.pk %}" data-escolha="">
+    {% csrf_token %}
+    {% include "agendamentos/_cartao_profissional.html" %}
+    <div class="barra" role="region" aria-label="Novo horário">
+      <div class="container barra__conteudo">
+        <div class="barra__texto">
+          <small>Novo horário</small>
+          <strong data-resumo-alvo>—</strong>
+        </div>
+        <button type="submit" class="botao botao--azul botao--grande">Confirmar novo horário <i class="ph ph-arrow-right" aria-hidden="true"></i></button>
+      </div>
+    </div>
+  </form>
+</div>
+<script src="{% static 'js/agenda.js' %}"></script>
+{% endblock %}
