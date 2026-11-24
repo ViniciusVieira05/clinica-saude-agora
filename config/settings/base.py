@@ -111,8 +111,8 @@ CANCELAMENTO_PRAZO_HORAS = 12            # RN05: prazo para o paciente cancelar 
 CLINICA = {
     "nome": "Saúde Agora",
     "cidade": "Monte Alegre do Piauí",
-    "endereco": "[Endereço completo]",
-    "bairro": "[Bairro]",
+    "endereco": "Endereço da Clínica",
+    "bairro": "Bairro da clinica",
     "telefone": "(89) 98136-5009",
     "whatsapp": "5589981365009",           # só números, com 55 + DDD
     "whatsapp_exibicao": "(89) 98136-5009",

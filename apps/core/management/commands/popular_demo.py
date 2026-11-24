@@ -14,6 +14,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.utils import timezone
+from django.utils.text import slugify
 
 from apps.agenda.models import HorarioAtendimento
 from apps.agendamentos.models import Consulta
@@ -91,14 +92,19 @@ class Command(BaseCommand):
     def _clinica(self):
         servicos = {}
         for nome, descricao, lista in ESPECIALIDADES:
-            esp, _ = Especialidade.objects.get_or_create(nome=nome, defaults={"descricao": descricao})
-            servicos[nome] = []
+            # Procura pelo slug para reaproveitar especialidades já cadastradas
+            # (ex.: "Clínico Geral" e "Clínico geral" são a mesma).
+            esp = Especialidade.objects.filter(slug=slugify(nome)).first()
+            if esp is None:
+                esp = Especialidade.objects.create(nome=nome, descricao=descricao)
+            servicos[esp.nome] = []
             for serv_nome, duracao, preco in lista:
-                serv, _ = Servico.objects.get_or_create(
-                    especialidade=esp, nome=serv_nome,
-                    defaults={"duracao_min": duracao, "preco": Decimal(preco)},
-                )
-                servicos[nome].append(serv)
+                serv = Servico.objects.filter(especialidade=esp, nome__iexact=serv_nome).first()
+                if serv is None:
+                    serv = Servico.objects.create(
+                        especialidade=esp, nome=serv_nome, duracao_min=duracao, preco=Decimal(preco)
+                    )
+                servicos[esp.nome].append(serv)
         return servicos
 
     def _profissionais(self):
@@ -113,7 +119,7 @@ class Command(BaseCommand):
             prof, _ = Profissional.objects.get_or_create(
                 usuario=usuario, defaults={"conselho": conselho, "registro": registro, "uf_registro": "PI", "bio": bio}
             )
-            prof.especialidades.set(Especialidade.objects.filter(nome__in=especialidades))
+            prof.especialidades.set(Especialidade.objects.filter(slug__in=[slugify(n) for n in especialidades]))
             for dia in range(5):  # segunda a sexta
                 HorarioAtendimento.objects.get_or_create(
                     profissional=prof, dia_semana=dia,
@@ -202,8 +208,9 @@ class Command(BaseCommand):
             if data.weekday() == 6:
                 continue
             for prof in profissionais:
-                esp = prof.especialidades.first()
-                opcoes_servico = servicos[esp.nome]
+                opcoes_servico = [s for e in prof.especialidades.all() for s in servicos.get(e.nome, [])]
+                if not opcoes_servico:
+                    continue
                 horarios = [time(8), time(9), time(10), time(11), time(14), time(15), time(16)]
                 if data.weekday() == 5:
                     horarios = [time(8), time(9), time(10)]

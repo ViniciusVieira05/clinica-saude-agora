@@ -41,7 +41,7 @@
         </div>
       </div>
     </form>
-    <script src="{% static 'js/agenda.js' %}"></script>
+    <script src="{% static 'js/agenda.js' %}?v={{ versao }}"></script>
   {% else %}
     <p class="vazio">Este profissional ainda não tem agenda online. Fale com a recepção pelo WhatsApp.</p>
   {% endif %}

@@ -19,9 +19,9 @@
   <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% if clinica.foto_fachada %}{% static clinica.foto_fachada %}{% else %}{% static 'img/logo.png' %}{% endif %}">
   <meta property="og:url" content="{{ request.build_absolute_uri }}">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="stylesheet" href="{% static 'css/site.css' %}">
+  <link rel="stylesheet" href="{% static 'css/site.css' %}?v={{ versao }}">
   <script src="https://unpkg.com/htmx.org@2.0.4" defer></script>
-  <script src="{% static 'js/formularios.js' %}" defer></script>
+  <script src="{% static 'js/formularios.js' %}?v={{ versao }}" defer></script>
   {% block head %}{% endblock %}
 </head>
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
@@ -48,7 +48,7 @@
               {% if user.is_superuser or user.tipo == "recepcao" or user.tipo == "admin" %}<a href="{% url 'painel:agenda' %}"><i class="ph ph-squares-four"></i>Painel da recepção</a>{% endif %}
               <a href="{% url 'contas:minha_area' %}"><i class="ph ph-house-line"></i>Minha área</a>
               <a href="{% url 'contas:minha_conta' %}"><i class="ph ph-user"></i>Meus dados</a>
-              <a href="#"><i class="ph ph-clipboard-text"></i>Meus agendamentos</a>
+              <a href="{% url 'agendamentos:meus' %}"><i class="ph ph-clipboard-text"></i>Meus agendamentos</a>
               <form method="post" action="{% url 'contas:sair' %}">{% csrf_token %}<button type="submit"><i class="ph ph-sign-out"></i>Sair</button></form>
             </div>
           </details>
