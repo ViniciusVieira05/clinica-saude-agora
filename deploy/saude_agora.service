@@ -1,0 +1,23 @@
+# /etc/systemd/system/saude_agora.service
+# Mantém o sistema da clínica ligado (Gunicorn) e reinicia sozinho se cair.
+[Unit]
+Description=Saude Agora (Gunicorn)
+After=network.target postgresql.service
+
+[Service]
+User=saudeagora
+Group=www-data
+WorkingDirectory=/srv/saude_agora
+Environment=DJANGO_SETTINGS_MODULE=config.settings.prod
+RuntimeDirectory=saude_agora
+ExecStart=/srv/saude_agora/.venv/bin/gunicorn config.wsgi:application \
+    --workers 2 \
+    --bind unix:/run/saude_agora/gunicorn.sock \
+    --umask 007 \
+    --access-logfile - \
+    --timeout 60
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
