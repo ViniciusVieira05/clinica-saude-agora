@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block conteudo %}
+<article class="leitura legal">
+  <div class="container leitura__container">
+    <p class="rotulo"><span></span>{% block rotulo %}{% endblock %}</p>
+    <h1 class="pagina-topo__titulo">{% block titulo_pagina %}{% endblock %}</h1>
+    <p class="legal__data">Última atualização: {% now "d/m/Y" %}</p>
+    <div class="leitura__texto legal__texto">{% block texto %}{% endblock %}</div>
+  </div>
+</article>
+{% endblock %}

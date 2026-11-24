@@ -93,3 +93,10 @@ def agenda_dos_profissionais(especialidade=None, servico=None):
             "dias": proximos_dias(profissional, servico_mostrado),
         })
     return linhas
+
+
+def servicos_do_profissional(profissional):
+    oferecidos = Servico.objects.filter(ativo=True, especialidade__in=profissional.especialidades.all())
+    if profissional.servicos.exists():
+        oferecidos = oferecidos.filter(pk__in=profissional.servicos.values("pk"))
+    return oferecidos.select_related("especialidade").order_by("especialidade__nome", "nome")

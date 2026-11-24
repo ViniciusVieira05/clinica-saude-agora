@@ -1,0 +1,41 @@
+{% extends "painel/base_painel.html" %}
+{% load saude %}
+{% block titulo %}Pacientes{% endblock %}
+{% block conteudo %}
+<div class="painel-cabecalho">
+  <div><h1>Pacientes</h1><p>{{ pagina.paginator.count }} cadastro{{ pagina.paginator.count|pluralize }}{% if termo %} para “{{ termo }}”{% endif %}</p></div>
+  <form class="painel-filtros" method="get">
+    <label class="busca busca--compacta">
+      <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+      <input type="search" name="q" value="{{ termo }}" placeholder="Nome, CPF ou telefone">
+    </label>
+    <a href="{% url 'painel:paciente_novo' %}" class="botao botao--azul"><i class="ph ph-user-plus"></i>Novo paciente</a>
+  </form>
+</div>
+
+<div class="tabela-agenda">
+  <table>
+    <thead><tr><th>Nome</th><th>CPF</th><th>Telefone</th><th>Nascimento</th><th></th></tr></thead>
+    <tbody>
+      {% for p in pagina %}
+        <tr>
+          <td><a href="{% url 'painel:paciente' p.pk %}" class="linha__paciente">{{ p.nome }}</a>{% if p.usuario_id %}<small>tem conta no site</small>{% endif %}</td>
+          <td>{{ p.cpf_formatado }}</td>
+          <td>{{ p.telefone|telefone_formatado }}</td>
+          <td>{{ p.data_nascimento|date:"d/m/Y" }}</td>
+          <td class="col-acoes"><a href="{% url 'painel:nova_consulta' %}?paciente={{ p.pk }}" class="botao-mini"><i class="ph ph-calendar-plus"></i><span>Agendar</span></a></td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5" class="painel-vazio-linha">Nenhum paciente encontrado.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% if pagina.has_other_pages %}
+  <nav class="paginacao">
+    {% if pagina.has_previous %}<a class="botao botao--linha" href="?q={{ termo|urlencode }}&pagina={{ pagina.previous_page_number }}">Anterior</a>{% endif %}
+    <span>Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}</span>
+    {% if pagina.has_next %}<a class="botao botao--linha" href="?q={{ termo|urlencode }}&pagina={{ pagina.next_page_number }}">Próxima</a>{% endif %}
+  </nav>
+{% endif %}
+{% endblock %}

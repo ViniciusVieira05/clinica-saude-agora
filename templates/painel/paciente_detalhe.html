@@ -1,0 +1,46 @@
+{% extends "painel/base_painel.html" %}
+{% load saude %}
+{% block titulo %}{{ paciente.nome }}{% endblock %}
+{% block conteudo %}
+<div class="painel-cabecalho">
+  <div>
+    <h1>{{ paciente.nome }}</h1>
+    <p>CPF {{ paciente.cpf_formatado }} · {{ paciente.data_nascimento|date:"d/m/Y" }}</p>
+  </div>
+  <div class="painel-filtros">
+    <a href="https://wa.me/{{ paciente.telefone|whatsapp_numero }}" target="_blank" rel="noopener" class="botao botao--linha"><i class="ph ph-whatsapp-logo"></i>WhatsApp</a>
+    <a href="{% url 'painel:paciente_editar' paciente.pk %}" class="botao botao--linha"><i class="ph ph-pencil-simple"></i>Editar</a>
+    <a href="{% url 'painel:nova_consulta' %}?paciente={{ paciente.pk }}" class="botao botao--azul"><i class="ph ph-calendar-plus"></i>Agendar</a>
+  </div>
+</div>
+
+<div class="detalhe">
+  <section class="nova__bloco">
+    <h2>Contato</h2>
+    <dl class="conta__dados">
+      <div><dt>Telefone</dt><dd>{{ paciente.telefone|telefone_formatado }}</dd></div>
+      <div><dt>E-mail</dt><dd>{{ paciente.email|default:"—" }}</dd></div>
+      <div><dt>Endereço</dt><dd>{% if paciente.endereco %}{{ paciente.endereco }}, {{ paciente.bairro }} – {{ paciente.cidade }}/{{ paciente.uf }}{% else %}—{% endif %}</dd></div>
+      <div><dt>Conta no site</dt><dd>{% if paciente.usuario_id %}Sim{% else %}Não{% endif %}</dd></div>
+    </dl>
+    {% if paciente.observacoes %}<p class="detalhe__obs"><i class="ph ph-note"></i>{{ paciente.observacoes }}</p>{% endif %}
+  </section>
+
+  <section class="nova__bloco">
+    <h2>Consultas</h2>
+    {% if historico %}
+      <ul class="historico">
+        {% for c in historico %}
+          <li>
+            <span class="historico__data">{{ c.inicio|date:"d/m/Y" }} · {{ c.inicio|time:"H:i" }}</span>
+            <span class="historico__info">{{ c.servico.nome }} com {{ c.profissional.nome }}</span>
+            <span class="status status--{{ c.status }}">{{ c.get_status_display }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="prof__aviso">Nenhuma consulta ainda.</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

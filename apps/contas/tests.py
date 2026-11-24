@@ -16,7 +16,7 @@ class ContaTests(TestCase):
 
     def test_criar_conta_cria_usuario_paciente_e_entra(self):
         resposta = self.client.post(reverse("contas:criar"), self.dados)
-        self.assertRedirects(resposta, reverse("site_publico:inicio"))
+        self.assertRedirects(resposta, reverse("contas:minha_area"))
         usuario = Usuario.objects.get(email="ana@teste.com")
         self.assertEqual(usuario.paciente.cpf, "52998224725")
         self.assertIsNotNone(usuario.paciente.aceite_termos_em)
@@ -44,7 +44,7 @@ class ContaTests(TestCase):
     def test_entrar_com_email(self):
         Usuario.objects.create_user("ana@teste.com", "Senha-forte-2026", nome="Ana")
         resposta = self.client.post(reverse("contas:entrar"), {"username": "ana@teste.com", "password": "Senha-forte-2026"})
-        self.assertRedirects(resposta, reverse("site_publico:inicio"))
+        self.assertRedirects(resposta, reverse("site_publico:inicio"), fetch_redirect_response=False)
 
     def test_nao_liga_ficha_com_data_de_nascimento_diferente(self):
         Paciente.objects.create(nome="Marcos Andrade", cpf="52998224725", data_nascimento=date(1975, 3, 3), telefone="89988887777")
@@ -56,3 +56,13 @@ class ContaTests(TestCase):
         Paciente.objects.create(nome="Ana Souza Lima", cpf="52998224725", data_nascimento=date(1990, 1, 1), telefone="89988887777")
         self.client.post(reverse("contas:criar"), self.dados)
         self.assertEqual(Usuario.objects.get(email="ana@teste.com").nome, "Ana Souza Lima")
+
+
+class MinhaAreaTests(TestCase):
+    def test_mostra_saudacao_e_atalhos(self):
+        usuario = Usuario.objects.create_user("ze@teste.com", "Senha-forte-2026", nome="Zé Lima")
+        Paciente.objects.create(usuario=usuario, nome="Zé Lima", cpf="11144477735", data_nascimento=date(1990, 1, 1), telefone="89999999999")
+        self.client.force_login(usuario)
+        resposta = self.client.get(reverse("contas:minha_area"))
+        self.assertContains(resposta, "Olá, Zé.")
+        self.assertContains(resposta, "Você não tem consultas marcadas")

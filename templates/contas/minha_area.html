@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block titulo %}Minha área · {{ clinica.nome }}{% endblock %}
+{% block conteudo %}
+<section class="area-topo">
+  <div class="container">
+    <p class="rotulo"><span></span>Minha área</p>
+    <h1 class="pagina-topo__titulo">Olá, {{ primeiro_nome }}.</h1>
+  </div>
+</section>
+
+<div class="container area">
+  <div class="area__principal">
+    {% if proxima %}
+      <section class="proxima">
+        <div class="proxima__data">
+          <small>{{ proxima.inicio|date:"l"|capfirst }}</small>
+          <strong>{{ proxima.inicio|date:"d" }}</strong>
+          <small>{{ proxima.inicio|date:"F"|capfirst }}</small>
+        </div>
+        <div class="proxima__info">
+          <p class="proxima__rotulo">Sua próxima consulta</p>
+          <h2>{{ proxima.inicio|time:"H:i" }} · {{ proxima.servico.nome }}</h2>
+          <p>{{ proxima.profissional.nome }} · {{ proxima.servico.especialidade.nome }}</p>
+          <p class="proxima__local"><i class="ph ph-map-pin" aria-hidden="true"></i>{{ clinica.endereco }}</p>
+          <span class="status status--{{ proxima.status }}">{{ proxima.get_status_display }}</span>
+          <div class="proxima__acoes">
+            {% if proxima.pode_alterar %}
+              <a href="{% url 'agendamentos:remarcar' proxima.pk %}" class="botao botao--linha"><i class="ph ph-arrows-clockwise" aria-hidden="true"></i>Remarcar</a>
+            {% endif %}
+            <a href="{{ clinica.mapa_url|default:'/#visite' }}" class="botao botao--linha" {% if clinica.mapa_url %}target="_blank" rel="noopener"{% endif %}><i class="ph ph-navigation-arrow" aria-hidden="true"></i>Como chegar</a>
+            <a href="{% url 'agendamentos:meus' %}" class="link-seta">Ver detalhes <i class="ph ph-arrow-right seta" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </section>
+      <ul class="lembretes">
+        <li><i class="ph ph-clock" aria-hidden="true"></i>Chegue 15 minutos antes</li>
+        <li><i class="ph ph-identification-card" aria-hidden="true"></i>Leve documento com foto</li>
+        <li><i class="ph ph-files" aria-hidden="true"></i>Traga exames anteriores, se tiver</li>
+      </ul>
+    {% else %}
+      <section class="proxima proxima--vazia">
+        <div>
+          <h2>Você não tem consultas marcadas</h2>
+          <p>Escolha o profissional e o horário em menos de um minuto.</p>
+        </div>
+        <a href="{% url 'agendamentos:agendar' %}" class="botao botao--azul botao--grande">Agendar consulta</a>
+      </section>
+    {% endif %}
+
+    {% if outras %}
+      <h2 class="area__titulo">Também marcadas</h2>
+      <ul class="historico">
+        {% for c in outras %}
+          <li>
+            <span class="historico__data">{{ c.inicio|date:"d/m" }} · {{ c.inicio|time:"H:i" }}</span>
+            <span class="historico__info">{{ c.servico.nome }} com {{ c.profissional.nome }}</span>
+            <span class="status status--{{ c.status }}">{{ c.get_status_display }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% if ultimas %}
+      <h2 class="area__titulo">Últimas consultas</h2>
+      <ul class="historico">
+        {% for c in ultimas %}
+          <li>
+            <span class="historico__data">{{ c.inicio|date:"d/m/Y" }}</span>
+            <span class="historico__info">{{ c.servico.nome }} com {{ c.profissional.nome }}</span>
+            <span class="status status--{{ c.status }}">{{ c.get_status_display }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+
+  <aside class="area__atalhos" aria-label="Atalhos">
+    <a href="{% url 'agendamentos:agendar' %}"><i class="ph ph-calendar-plus" aria-hidden="true"></i><span><strong>Agendar consulta</strong><small>Ver horários livres</small></span></a>
+    <a href="{% url 'agendamentos:meus' %}"><i class="ph ph-clipboard-text" aria-hidden="true"></i><span><strong>Meus agendamentos</strong><small>Remarcar ou cancelar</small></span></a>
+    <a href="{% url 'contas:minha_conta' %}"><i class="ph ph-user" aria-hidden="true"></i><span><strong>Meus dados</strong><small>Telefone e endereço</small></span></a>
+    <a href="https://wa.me/{{ clinica.whatsapp }}" target="_blank" rel="noopener"><i class="ph ph-whatsapp-logo" aria-hidden="true"></i><span><strong>Falar com a recepção</strong><small>{{ clinica.whatsapp_exibicao }}</small></span></a>
+  </aside>
+</div>
+{% endblock %}

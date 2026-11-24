@@ -47,13 +47,21 @@ def agendar(*, paciente, profissional, servico, inicio, usuario=None, origem=Con
             encaixe=False, observacao=""):
     """Cria uma consulta.
 
-    Encaixe (só recepção) ignora antecedência e a grade de horários livres (RN06),
-    mas nunca a sobreposição, que o banco garante.
+    - Pelo site: respeita antecedência, limite de dias e a grade de horários livres.
+    - Pela recepção: pode marcar para daqui a pouco (sem antecedência mínima).
+    - Encaixe (só recepção): ignora a grade de horários (RN06),
+      mas nunca a sobreposição, que o banco garante.
     """
     _validar_servico(profissional, servico)
+    pela_recepcao = origem == Consulta.Origem.RECEPCAO
+    if inicio < timezone.now():
+        raise ValidationError("Esse horário já passou.")
     if not encaixe:
-        _validar_janela(inicio)
-        livres = horarios_livres(profissional, servico, timezone.localtime(inicio).date())
+        if not pela_recepcao:
+            _validar_janela(inicio)
+        livres = horarios_livres(
+            profissional, servico, timezone.localtime(inicio).date(), respeitar_antecedencia=not pela_recepcao
+        )
         if inicio not in livres:
             raise ValidationError("Esse horário não está disponível.")
 

@@ -38,3 +38,19 @@ class OrientacaoTests(TestCase):
     def test_orientacao_inativa_da_404(self):
         item = Orientacao.objects.create(titulo="Rascunho", resumo="x", conteudo="x", ativo=False)
         self.assertEqual(self.client.get(item.get_absolute_url()).status_code, 404)
+
+
+class PaginasNovasTests(TestCase):
+    def test_paginas_legais(self):
+        self.assertContains(self.client.get(reverse("site_publico:privacidade")), "Política de privacidade")
+        self.assertContains(self.client.get(reverse("site_publico:termos")), "Termos de uso")
+
+    def test_perfil_do_profissional(self):
+        from apps.contas.models import Usuario
+        from apps.clinica.models import Profissional
+
+        usuario = Usuario.objects.create_user("dr@teste.com", "Senha-forte-2026", nome="Dra. Teste", tipo="profissional")
+        prof = Profissional.objects.create(usuario=usuario, registro="1111", bio="Apresentação de teste.")
+        resposta = self.client.get(reverse("site_publico:profissional", args=[prof.pk]))
+        self.assertContains(resposta, "Dra. Teste")
+        self.assertContains(resposta, "Apresentação de teste.")

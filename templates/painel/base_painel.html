@@ -1,0 +1,49 @@
+{% load static %}<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>{% block titulo %}Painel{% endblock %} · {{ clinica.nome }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
+  <meta name="theme-color" content="#1A2B5F">
+  <link rel="stylesheet" href="{% static 'css/site.css' %}">
+  <link rel="stylesheet" href="{% static 'css/painel.css' %}">
+  <script src="https://unpkg.com/htmx.org@2.0.4" defer></script>
+  <script src="{% static 'js/formularios.js' %}" defer></script>
+</head>
+<body class="painel" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+  {% if modo_demo %}<div class="faixa-demo" role="note"><i class="ph ph-flask" aria-hidden="true"></i>Ambiente de demonstração · os dados são fictícios</div>{% endif %}
+  {% url 'painel:agenda' as url_agenda %}{% url 'painel:nova_consulta' as url_nova %}{% url 'painel:pacientes' as url_pacientes %}
+  <header class="painel-topo">
+    <div class="painel-topo__conteudo">
+      <a href="{{ url_agenda }}" class="painel-topo__marca">
+        <img src="{% static 'img/logo.png' %}" alt="{{ clinica.nome }}" height="36">
+        <span>Recepção</span>
+      </a>
+      <nav class="painel-menu" aria-label="Menu do painel">
+        <a href="{{ url_agenda }}" class="{% if request.path == url_agenda %}ativo{% endif %}"><i class="ph ph-calendar-dots"></i>Agenda</a>
+        <a href="{{ url_nova }}" class="{% if request.path == url_nova %}ativo{% endif %}"><i class="ph ph-calendar-plus"></i>Nova consulta</a>
+        <a href="{{ url_pacientes }}" class="{% if url_pacientes in request.path %}ativo{% endif %}"><i class="ph ph-users"></i>Pacientes</a>
+      </nav>
+      <div class="painel-topo__usuario">
+        <a href="{% url 'site_publico:inicio' %}" class="painel-link" target="_blank" rel="noopener"><i class="ph ph-arrow-square-out"></i><span>Ver site</span></a>
+        {% if user.is_staff %}<a href="{% url 'admin:index' %}" class="painel-link"><i class="ph ph-gear-six"></i><span>Admin</span></a>{% endif %}
+        <span class="painel-topo__nome">{{ user.nome }}</span>
+        <form method="post" action="{% url 'contas:sair' %}">{% csrf_token %}<button type="submit" class="painel-link" aria-label="Sair"><i class="ph ph-sign-out"></i></button></form>
+      </div>
+    </div>
+  </header>
+
+  <div id="avisos" class="avisos" role="status" aria-live="polite">
+    {% include "painel/_avisos.html" %}
+  </div>
+
+  <main class="painel-conteudo">{% block conteudo %}{% endblock %}</main>
+</body>
+</html>

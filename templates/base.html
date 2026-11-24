@@ -10,11 +10,22 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700;800;900&family=Inter:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
+  <meta name="theme-color" content="#1A2B5F">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="{{ clinica.nome }}">
+  <meta property="og:title" content="{% block og_titulo %}{{ clinica.nome }} · Agende sua consulta online{% endblock %}">
+  <meta property="og:description" content="{% block og_descricao %}Consultas e exames com hora marcada em {{ clinica.cidade }}. Escolha o profissional e o horário pelo site.{% endblock %}">
+  <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% if clinica.foto_fachada %}{% static clinica.foto_fachada %}{% else %}{% static 'img/logo.png' %}{% endif %}">
+  <meta property="og:url" content="{{ request.build_absolute_uri }}">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="stylesheet" href="{% static 'css/site.css' %}">
   <script src="https://unpkg.com/htmx.org@2.0.4" defer></script>
+  <script src="{% static 'js/formularios.js' %}" defer></script>
   {% block head %}{% endblock %}
 </head>
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+  {% if modo_demo %}<div class="faixa-demo" role="note"><i class="ph ph-flask" aria-hidden="true"></i>Ambiente de demonstração · os dados são fictícios</div>{% endif %}
 
   <header class="cabecalho">
     <div class="container cabecalho__conteudo">
@@ -34,8 +45,10 @@
           <details class="conta-menu">
             <summary class="botao botao--linha botao--paciente"><i class="ph ph-user-circle" aria-hidden="true"></i>{{ user.nome|truncatewords:1|cut:"…" }}<i class="ph ph-caret-down" aria-hidden="true"></i></summary>
             <div class="conta-menu__lista">
-              <a href="{% url 'contas:minha_conta' %}"><i class="ph ph-user"></i>Minha conta</a>
-              <a href="{% url 'agendamentos:meus' %}"><i class="ph ph-clipboard-text"></i>Meus agendamentos</a>
+              {% if user.is_superuser or user.tipo == "recepcao" or user.tipo == "admin" %}<a href="{% url 'painel:agenda' %}"><i class="ph ph-squares-four"></i>Painel da recepção</a>{% endif %}
+              <a href="{% url 'contas:minha_area' %}"><i class="ph ph-house-line"></i>Minha área</a>
+              <a href="{% url 'contas:minha_conta' %}"><i class="ph ph-user"></i>Meus dados</a>
+              <a href="#"><i class="ph ph-clipboard-text"></i>Meus agendamentos</a>
               <form method="post" action="{% url 'contas:sair' %}">{% csrf_token %}<button type="submit"><i class="ph ph-sign-out"></i>Sair</button></form>
             </div>
           </details>
@@ -52,7 +65,6 @@
             <a href="{% url 'site_publico:orientacoes' %}">Orientações</a>
             <a href="{{ url_inicio }}#visite">Contato</a>
             {% if user.is_authenticated %}
-              <a href="{% url 'agendamentos:meus' %}">Meus agendamentos</a>
               <a href="{% url 'contas:minha_conta' %}">Minha conta</a>
             {% else %}
               <a href="{% url 'contas:entrar' %}">Área do paciente</a>
@@ -121,11 +133,12 @@
       <div class="container rodape__base-conteudo">
         <span>© {% now "Y" %} {{ clinica.nome }}. Todos os direitos reservados.</span>
         <span>Responsável técnico: {{ clinica.responsavel_tecnico }} · {{ clinica.responsavel_registro }}</span>
+        <span class="rodape__legal"><a href="{% url 'site_publico:privacidade' %}">Política de privacidade</a> · <a href="{% url 'site_publico:termos' %}">Termos de uso</a></span>
       </div>
     </div>
   </footer>
 
-  <a class="whatsapp" href="https://wa.me/{89981365009}" target="_blank" rel="noopener" aria-label="Fale conosco pelo WhatsApp">
+  <a class="whatsapp" href="https://wa.me/{{ clinica.whatsapp }}" target="_blank" rel="noopener" aria-label="Fale conosco pelo WhatsApp">
     <i class="ph-fill ph-whatsapp-logo" aria-hidden="true"></i><span>Fale conosco</span>
   </a>
 </body>

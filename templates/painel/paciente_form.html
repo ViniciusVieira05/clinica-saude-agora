@@ -1,0 +1,35 @@
+{% extends "painel/base_painel.html" %}
+{% block titulo %}{% if paciente %}Editar paciente{% else %}Novo paciente{% endif %}{% endblock %}
+{% block conteudo %}
+<div class="painel-cabecalho">
+  <div><h1>{% if paciente %}Editar {{ paciente.nome }}{% else %}Novo paciente{% endif %}</h1></div>
+</div>
+<form method="post" class="nova__bloco form-paciente" novalidate>
+  {% csrf_token %}
+  <input type="hidden" name="depois" value="{{ depois }}">
+  {% include "includes/campo.html" with campo=form.nome %}
+  <div class="campos-3">
+    {% include "includes/campo.html" with campo=form.cpf %}
+    {% include "includes/campo.html" with campo=form.data_nascimento %}
+    {% include "includes/campo.html" with campo=form.sexo %}
+  </div>
+  <div class="campos-2">
+    {% include "includes/campo.html" with campo=form.telefone %}
+    {% include "includes/campo.html" with campo=form.email %}
+  </div>
+  <div class="campos-3">
+    {% include "includes/campo.html" with campo=form.cep %}
+    {% include "includes/campo.html" with campo=form.cidade %}
+    {% include "includes/campo.html" with campo=form.uf %}
+  </div>
+  <div class="campos-2">
+    {% include "includes/campo.html" with campo=form.endereco %}
+    {% include "includes/campo.html" with campo=form.bairro %}
+  </div>
+  {% include "includes/campo.html" with campo=form.observacoes %}
+  <div class="form-paciente__acoes">
+    <button type="submit" class="botao botao--azul botao--grande">{% if depois == "agendar" %}Salvar e agendar{% else %}Salvar{% endif %}</button>
+    <a href="{% if paciente %}{% url 'painel:paciente' paciente.pk %}{% else %}{% url 'painel:pacientes' %}{% endif %}" class="botao botao--linha botao--grande">Cancelar</a>
+  </div>
+</form>
+{% endblock %}

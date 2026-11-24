@@ -110,7 +110,7 @@ CANCELAMENTO_PRAZO_HORAS = 12            # RN05: prazo para o paciente cancelar 
 # Dados da clínica exibidos no site (troque pelos dados reais)
 CLINICA = {
     "nome": "Saúde Agora",
-    "cidade": "[Monte Alegre do Piauí]",
+    "cidade": "Monte Alegre do Piauí",
     "endereco": "[Endereço completo]",
     "bairro": "[Bairro]",
     "telefone": "(89) 98136-5009",
@@ -131,3 +131,6 @@ LOGIN_URL = "contas:entrar"
 LOGIN_REDIRECT_URL = "site_publico:inicio"
 LOGOUT_REDIRECT_URL = "site_publico:inicio"
 DEFAULT_FROM_EMAIL = "Saúde Agora <nao-responda@saudeagora.com.br>"
+
+# Ambiente de demonstração: mostra a faixa "Demonstração" e libera o comando popular_demo
+DEMO = env.bool("DEMO", default=False)

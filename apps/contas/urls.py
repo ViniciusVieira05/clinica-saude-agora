@@ -5,6 +5,7 @@ from . import views
 app_name = "contas"
 
 urlpatterns = [
+    path("", views.minha_area, name="minha_area"),
     path("entrar/", views.EntrarView.as_view(), name="entrar"),
     path("sair/", views.SairView.as_view(), name="sair"),
     path("criar/", views.criar_conta, name="criar"),

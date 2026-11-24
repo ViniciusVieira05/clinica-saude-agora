@@ -1,0 +1,10 @@
+{% load saude %}
+{% for p in resultados %}
+  <a class="resultado" href="{% url 'painel:nova_consulta' %}?paciente={{ p.pk }}">
+    <span class="resultado__inicial">{{ p.nome|slice:":1" }}</span>
+    <span><strong>{{ p.nome }}</strong><small>CPF {{ p.cpf_formatado }} · {{ p.telefone|telefone_formatado }}</small></span>
+    <i class="ph ph-caret-right"></i>
+  </a>
+{% empty %}
+  <p class="resultado-vazio">Nenhum paciente encontrado.</p>
+{% endfor %}

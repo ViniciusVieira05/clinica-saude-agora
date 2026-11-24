@@ -1,0 +1,24 @@
+{% load static %}<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Erro temporário</title>
+  <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
+  <style>
+    body { margin: 0; font-family: Inter, system-ui, sans-serif; color: #1A2B5F; background: #F5F9FD; display: grid; place-items: center; min-height: 100vh; text-align: center; padding: 24px; box-sizing: border-box; }
+    img { height: 52px; margin-bottom: 32px; }
+    h1 { font-size: 34px; letter-spacing: -0.03em; margin: 0 0 12px; }
+    p { color: #3A4A70; font-size: 18px; margin: 0 0 28px; }
+    a { display: inline-block; background: #1A2B5F; color: #fff; text-decoration: none; padding: 14px 26px; border-radius: 3px; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div>
+    <img src="{% static 'img/logo.png' %}" alt="">
+    <h1>Algo deu errado do nosso lado</h1>
+    <p>Já fomos avisados. Tente de novo em alguns minutos.</p>
+    <a href="/">Voltar ao início</a>
+  </div>
+</body>
+</html>

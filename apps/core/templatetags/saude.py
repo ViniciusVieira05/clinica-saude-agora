@@ -41,3 +41,22 @@ def icone_especialidade(nome):
         if chave in nome:
             return icone
     return "ph-first-aid-kit"
+
+
+@register.filter
+def whatsapp_numero(telefone):
+    """Transforma '89999998888' em '5589999998888' para usar no wa.me."""
+    numero = "".join(c for c in str(telefone or "") if c.isdigit())
+    if len(numero) in (10, 11):
+        numero = "55" + numero
+    return numero
+
+
+@register.filter
+def telefone_formatado(telefone):
+    n = "".join(c for c in str(telefone or "") if c.isdigit())
+    if len(n) == 11:
+        return f"({n[:2]}) {n[2:7]}-{n[7:]}"
+    if len(n) == 10:
+        return f"({n[:2]}) {n[2:6]}-{n[6:]}"
+    return telefone

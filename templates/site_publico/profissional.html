@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titulo %}{{ pessoa.nome }} · {{ clinica.nome }}{% endblock %}
+{% block descricao %}{{ pessoa.nome }}, {% for e in pessoa.especialidades.all %}{{ e.nome }}{% if not forloop.last %}, {% endif %}{% endfor %} na {{ clinica.nome }}. Veja os horários livres e agende online.{% endblock %}
+{% block og_titulo %}{{ pessoa.nome }} · {{ clinica.nome }}{% endblock %}
+
+{% block conteudo %}
+<section class="perfil">
+  <div class="container perfil__grade">
+    <div class="perfil__foto">
+      {% if pessoa.foto %}<img src="{{ pessoa.foto.url }}" alt="{{ pessoa.nome }}">{% else %}<span aria-hidden="true">{{ pessoa.nome|slice:":1" }}</span>{% endif %}
+    </div>
+    <div class="perfil__texto">
+      <a href="{% url 'site_publico:inicio' %}#equipe" class="link-seta link-seta--voltar"><i class="ph ph-arrow-left" aria-hidden="true"></i> Corpo clínico</a>
+      <h1 class="pagina-topo__titulo">{{ pessoa.nome }}</h1>
+      <p class="perfil__esp">{% for e in pessoa.especialidades.all %}{{ e.nome }}{% if not forloop.last %} · {% endif %}{% endfor %}</p>
+      <p class="perfil__reg"><i class="ph ph-seal-check" aria-hidden="true"></i>{{ pessoa.registro_formatado }}</p>
+      {% if pessoa.bio %}<p class="perfil__bio">{{ pessoa.bio|linebreaksbr }}</p>{% endif %}
+      {% if servicos %}
+        <table class="perfil__servicos">
+          <thead><tr><th>Atendimento</th><th>Duração</th><th>Valor</th></tr></thead>
+          <tbody>
+            {% for s in servicos %}<tr><td>{{ s.nome }}</td><td>{{ s.duracao_min }} min</td><td>R$ {{ s.preco|floatformat:2 }}</td></tr>{% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<div class="container">
+  <h2 class="secao__titulo perfil__titulo-agenda">Próximos horários</h2>
+  {% if linha %}
+    <form class="agenda" method="post" action="{% url 'agendamentos:confirmar' %}" data-escolha="">
+      {% csrf_token %}
+      {% include "agendamentos/_cartao_profissional.html" %}
+      <div class="barra" role="region" aria-label="Horário escolhido">
+        <div class="container barra__conteudo">
+          <div class="barra__texto"><small>Horário escolhido</small><strong data-resumo-alvo>—</strong></div>
+          <button type="submit" class="botao botao--azul botao--grande">{% if user.is_authenticated %}Confirmar agendamento{% else %}Continuar{% endif %} <i class="ph ph-arrow-right" aria-hidden="true"></i></button>
+        </div>
+      </div>
+    </form>
+    <script src="{% static 'js/agenda.js' %}"></script>
+  {% else %}
+    <p class="vazio">Este profissional ainda não tem agenda online. Fale com a recepção pelo WhatsApp.</p>
+  {% endif %}
+</div>
+{% endblock %}

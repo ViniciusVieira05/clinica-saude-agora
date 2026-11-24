@@ -1,0 +1,30 @@
+{% extends "site_publico/_pagina_legal.html" %}
+{% block titulo %}Termos de uso · {{ clinica.nome }}{% endblock %}
+{% block rotulo %}Termos{% endblock %}
+{% block titulo_pagina %}Termos de uso{% endblock %}
+{% block texto %}
+<p>Ao criar uma conta ou agendar pelo site da {{ clinica.nome }}, você concorda com estes termos.</p>
+
+<h2>1. Conta</h2>
+<p>Os dados informados no cadastro devem ser verdadeiros e do próprio paciente ou de seu responsável legal. Você é responsável por manter sua senha em sigilo.</p>
+
+<h2>2. Agendamentos</h2>
+<ul>
+  <li>O horário só fica reservado depois que a confirmação aparece na tela.</li>
+  <li>Remarcações e cancelamentos pelo site podem ser feitos até {{ prazo_cancelamento|default:"12" }} horas antes da consulta. Depois disso, fale com a recepção.</li>
+  <li>Recomendamos chegar 15 minutos antes, com documento com foto.</li>
+  <li>A clínica pode entrar em contato para confirmar a presença ou, em caso de imprevisto, remarcar a consulta.</li>
+</ul>
+
+<h2>3. Valores</h2>
+<p>Os valores exibidos no site são os praticados no momento do agendamento. A forma de pagamento é combinada na recepção.</p>
+
+<h2>4. Uso do site</h2>
+<p>O site serve para informação e agendamento. As orientações publicadas não substituem uma consulta. Em caso de urgência, procure um pronto atendimento ou ligue 192 (SAMU).</p>
+
+<h2>5. Privacidade</h2>
+<p>O tratamento dos seus dados segue a nossa <a href="{% url 'site_publico:privacidade' %}">Política de privacidade</a>.</p>
+
+<h2>6. Contato</h2>
+<p>Dúvidas sobre estes termos: {{ clinica.telefone }} · WhatsApp {{ clinica.whatsapp_exibicao }}.</p>
+{% endblock %}

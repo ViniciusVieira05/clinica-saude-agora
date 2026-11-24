@@ -1,0 +1,43 @@
+{% extends "site_publico/_pagina_legal.html" %}
+{% block titulo %}Política de privacidade · {{ clinica.nome }}{% endblock %}
+{% block rotulo %}LGPD{% endblock %}
+{% block titulo_pagina %}Política de privacidade{% endblock %}
+{% block texto %}
+<p>A {{ clinica.nome }} leva a sério a proteção dos seus dados. Esta política explica quais dados coletamos, por que coletamos e quais são os seus direitos, conforme a Lei Geral de Proteção de Dados (Lei nº 13.709/2018).</p>
+
+<h2>1. Quem é o responsável pelos seus dados</h2>
+<p>A {{ clinica.nome }}, localizada em {{ clinica.endereco }}, é a controladora dos dados tratados neste site e no atendimento. Contato: {{ clinica.telefone }} · WhatsApp {{ clinica.whatsapp_exibicao }}.</p>
+
+<h2>2. Quais dados coletamos</h2>
+<ul>
+  <li><strong>Cadastro:</strong> nome, CPF, data de nascimento, telefone, e-mail e endereço.</li>
+  <li><strong>Agendamentos:</strong> profissional, serviço, data, horário e status das consultas.</li>
+  <li><strong>Atendimento:</strong> informações registradas pela equipe durante o seu atendimento.</li>
+  <li><strong>Pagamentos:</strong> valor, forma e data do pagamento. Não guardamos dados de cartão.</li>
+  <li><strong>Acesso:</strong> data, hora e endereço IP das ações feitas no sistema, para segurança.</li>
+</ul>
+
+<h2>3. Para que usamos os dados</h2>
+<ul>
+  <li>Agendar, confirmar, remarcar e lembrar as suas consultas.</li>
+  <li>Prestar o atendimento de saúde e manter o seu histórico.</li>
+  <li>Registrar pagamentos e cumprir obrigações legais e fiscais.</li>
+  <li>Garantir a segurança do sistema e evitar fraudes.</li>
+</ul>
+<p>Dados de saúde são tratados apenas para a prestação dos serviços de saúde, como permite a LGPD.</p>
+
+<h2>4. Com quem compartilhamos</h2>
+<p>Não vendemos nem cedemos os seus dados. Eles podem ser acessados por fornecedores que nos ajudam a operar o sistema (hospedagem e suporte técnico), sempre sob dever de confidencialidade, e por autoridades quando a lei exigir.</p>
+
+<h2>5. Por quanto tempo guardamos</h2>
+<p>Os dados de cadastro ficam guardados enquanto você for nosso paciente. Registros de atendimento seguem os prazos exigidos pelas normas de saúde. Depois disso, são excluídos ou anonimizados.</p>
+
+<h2>6. Como protegemos</h2>
+<p>Acesso por senha individual, conexão segura (HTTPS), cópias de segurança diárias e registro de quem criou ou alterou cada informação.</p>
+
+<h2>7. Seus direitos</h2>
+<p>Você pode pedir a qualquer momento: confirmação e acesso aos seus dados, correção, exclusão dos dados que não precisamos manter por lei, informação sobre compartilhamentos e revogação do consentimento. Para isso, fale com a recepção pelos contatos acima.</p>
+
+<h2>8. Alterações</h2>
+<p>Esta política pode ser atualizada. A data da última atualização aparece no topo da página.</p>
+{% endblock %}

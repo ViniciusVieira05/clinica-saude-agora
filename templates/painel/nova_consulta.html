@@ -1,0 +1,96 @@
+{% extends "painel/base_painel.html" %}
+{% load saude %}
+{% block titulo %}Nova consulta{% endblock %}
+{% block conteudo %}
+<div class="painel-cabecalho">
+  <div><h1>Nova consulta</h1><p>Agende para um paciente que ligou ou chegou na recepção.</p></div>
+</div>
+
+<div class="nova">
+  <section class="nova__bloco">
+    <h2><span>1</span>Paciente</h2>
+    {% if paciente %}
+      <div class="paciente-escolhido">
+        <span class="resultado__inicial">{{ paciente.nome|slice:":1" }}</span>
+        <span><strong>{{ paciente.nome }}</strong><small>CPF {{ paciente.cpf_formatado }} · {{ paciente.telefone|telefone_formatado }}</small></span>
+        <a href="{% url 'painel:nova_consulta' %}" class="botao botao--linha">Trocar</a>
+      </div>
+    {% else %}
+      <label class="busca">
+        <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+        <input type="search" name="q" value="{{ busca }}" placeholder="Nome, CPF ou telefone" autocomplete="off" autofocus
+               hx-get="{% url 'painel:buscar_pacientes' %}" hx-trigger="input changed delay:300ms, search" hx-target="#resultados">
+      </label>
+      <div id="resultados" class="resultados">{% if busca %}{% include "painel/_resultados_pacientes.html" %}{% endif %}</div>
+      <a href="{% url 'painel:paciente_novo' %}?depois=agendar" class="nova__link"><i class="ph ph-user-plus"></i>Cadastrar paciente novo</a>
+    {% endif %}
+  </section>
+
+  {% if paciente %}
+  <form class="nova__bloco" method="get" id="filtro-consulta">
+    <input type="hidden" name="paciente" value="{{ paciente.pk }}">
+    <h2><span>2</span>Profissional, serviço e dia</h2>
+    <div class="nova__campos">
+      <label class="filtro"><span>Profissional</span>
+        <select name="profissional" onchange="this.form.submit()">
+          <option value="">Escolha</option>
+          {% for p in profissionais %}<option value="{{ p.pk }}" {% if p == profissional %}selected{% endif %}>{{ p.nome }}</option>{% endfor %}
+        </select>
+      </label>
+      {% if profissional %}
+      <label class="filtro"><span>Serviço</span>
+        <select name="servico" onchange="this.form.submit()">
+          <option value="">Escolha</option>
+          {% for s in servicos %}<option value="{{ s.pk }}" {% if s == servico %}selected{% endif %}>{{ s.nome }} · {{ s.duracao_min }} min · R$ {{ s.preco|floatformat:2 }}</option>{% endfor %}
+        </select>
+      </label>
+      <label class="filtro"><span>Dia</span>
+        <input type="date" name="data" value="{{ data|date:'Y-m-d' }}" min="{{ hoje|date:'Y-m-d' }}" onchange="this.form.submit()">
+      </label>
+      {% endif %}
+    </div>
+    <noscript><button class="botao botao--linha">Atualizar</button></noscript>
+  </form>
+  {% endif %}
+
+  {% if paciente and profissional and servico %}
+  <form class="nova__bloco" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="paciente" value="{{ paciente.pk }}">
+    <input type="hidden" name="profissional" value="{{ profissional.pk }}">
+    <input type="hidden" name="servico" value="{{ servico.pk }}">
+    <input type="hidden" name="data" value="{{ data|date:'Y-m-d' }}">
+    <input type="hidden" name="query" value="{{ request.GET.urlencode }}">
+    <h2><span>3</span>Horário · {{ data|date:"l, d/m"|capfirst }}</h2>
+
+    <div class="nova__horarios">
+      {% for periodo in periodos %}
+        <div class="periodo">
+          <h3><i class="ph {{ periodo.icone }}" aria-hidden="true"></i>{{ periodo.nome }}</h3>
+          <div class="horas">
+            {% for h in periodo.horarios %}
+              <label class="hora"><input type="radio" name="horario" value="{{ h|time:'H:i' }}"><span>{{ h|time:"H:i" }}</span></label>
+            {% endfor %}
+          </div>
+        </div>
+      {% empty %}
+        <p class="prof__aviso"><i class="ph ph-calendar-x"></i>Sem horários livres neste dia. Escolha outro dia ou use o encaixe.</p>
+      {% endfor %}
+    </div>
+
+    <details class="encaixe">
+      <summary><i class="ph ph-clock-countdown"></i>Encaixe fora da grade de horários</summary>
+      <label class="campo-encaixe"><input type="checkbox" name="encaixe"> Marcar como encaixe às
+        <input type="time" name="hora_encaixe" step="300"></label>
+      <small>O sistema ainda impede dois pacientes no mesmo horário do profissional.</small>
+    </details>
+
+    <label class="filtro filtro--largo"><span>Observação (opcional)</span>
+      <input type="text" name="observacao" maxlength="200" placeholder="Ex.: primeira consulta, trazer exames">
+    </label>
+
+    <button type="submit" class="botao botao--azul botao--grande">Marcar consulta</button>
+  </form>
+  {% endif %}
+</div>
+{% endblock %}

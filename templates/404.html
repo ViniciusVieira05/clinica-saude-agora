@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block titulo %}Página não encontrada · {{ clinica.nome }}{% endblock %}
+{% block conteudo %}
+<section class="erro-pagina">
+  <div class="container erro-pagina__conteudo">
+    <p class="erro-pagina__codigo">404</p>
+    <h1 class="pagina-topo__titulo">Não encontramos esta página</h1>
+    <p>O endereço pode estar errado ou a página foi removida.</p>
+    <div class="erro-pagina__acoes">
+      <a href="{% url 'site_publico:inicio' %}" class="botao botao--marinho botao--grande">Voltar ao início</a>
+      <a href="{% url 'agendamentos:agendar' %}" class="botao botao--linha botao--grande">Agendar consulta</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

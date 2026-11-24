@@ -20,7 +20,7 @@
     {% include "includes/campo.html" with campo=form.senha2 %}
   </div>
   <div class="campo campo--check{% if form.aceite_termos.errors %} campo--erro{% endif %}">
-    <label>{{ form.aceite_termos }} <span>{{ form.aceite_termos.label }}</span></label>
+    <label>{{ form.aceite_termos }} <span>Li e aceito a <a href="{% url 'site_publico:privacidade' %}" target="_blank" rel="noopener">Política de privacidade</a> e os <a href="{% url 'site_publico:termos' %}" target="_blank" rel="noopener">Termos de uso</a>.</span></label>
     {% for erro in form.aceite_termos.errors %}<small class="campo__erro">{{ erro }}</small>{% endfor %}
   </div>
   <input type="hidden" name="next" value="{{ next }}">

@@ -13,13 +13,22 @@ def _destino(request):
     proximo = request.POST.get("next") or request.GET.get("next")
     if proximo and url_has_allowed_host_and_scheme(proximo, allowed_hosts={request.get_host()}):
         return proximo
-    return reverse_lazy("site_publico:inicio")
+    return reverse_lazy("contas:minha_area")
 
 
 class EntrarView(auth_views.LoginView):
     template_name = "contas/entrar.html"
     authentication_form = EntrarForm
     redirect_authenticated_user = True
+
+    def get_default_redirect_url(self):
+        from apps.painel.permissoes import eh_recepcao
+
+        if eh_recepcao(self.request.user):
+            return reverse_lazy("painel:agenda")
+        if hasattr(self.request.user, "paciente"):
+            return reverse_lazy("contas:minha_area")
+        return super().get_default_redirect_url()
 
 
 class SairView(auth_views.LogoutView):
@@ -78,3 +87,31 @@ class NovaSenhaView(auth_views.PasswordResetConfirmView):
 
 class SenhaConcluidaView(auth_views.PasswordResetCompleteView):
     template_name = "contas/senha_concluida.html"
+
+@login_required
+def minha_area(request):
+    from django.utils import timezone
+
+    from apps.agendamentos import services as consultas
+    from apps.agendamentos.models import Consulta
+
+    paciente = getattr(request.user, "paciente", None)
+    if paciente is None:
+        return redirect("site_publico:inicio")
+    agora = timezone.now()
+    base = paciente.consultas.select_related("profissional__usuario", "servico__especialidade")
+    proximas = list(
+        base.filter(fim__gte=agora, status__in=[Consulta.Status.AGENDADA, Consulta.Status.CONFIRMADA]).order_by("inicio")[:4]
+    )
+    proxima = proximas[0] if proximas else None
+    if proxima:
+        proxima.pode_alterar = consultas.pode_alterar_pelo_site(proxima)
+    ultimas = base.filter(inicio__lt=agora).order_by("-inicio")[:5]
+    contexto = {
+        "paciente": paciente,
+        "proxima": proxima,
+        "outras": proximas[1:],
+        "ultimas": ultimas,
+        "primeiro_nome": paciente.nome.split()[0],
+    }
+    return render(request, "contas/minha_area.html", contexto)

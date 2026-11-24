@@ -28,11 +28,11 @@ class CriarContaForm(forms.Form):
     nome = forms.CharField(label="Nome completo", max_length=150,
                            widget=forms.TextInput(attrs={"autocomplete": "name"}))
     cpf = forms.CharField(label="CPF", max_length=14,
-                          widget=forms.TextInput(attrs={"inputmode": "numeric", "placeholder": "000.000.000-00"}))
+                          widget=forms.TextInput(attrs={"inputmode": "numeric", "placeholder": "000.000.000-00", "data-mascara": "cpf"}))
     data_nascimento = forms.DateField(label="Data de nascimento",
                                       widget=forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"))
     telefone = forms.CharField(label="Telefone / WhatsApp", max_length=20,
-                               widget=forms.TextInput(attrs={"inputmode": "tel", "autocomplete": "tel", "placeholder": "(00) 00000-0000"}))
+                               widget=forms.TextInput(attrs={"inputmode": "tel", "autocomplete": "tel", "placeholder": "(00) 00000-0000", "data-mascara": "telefone"}))
     email = forms.EmailField(label="E-mail", widget=forms.EmailInput(attrs={"autocomplete": "email"}))
     senha1 = forms.CharField(label="Senha", strip=False,
                              widget=forms.PasswordInput(attrs={"autocomplete": "new-password"}),
@@ -92,6 +92,6 @@ class MinhaContaForm(forms.ModelForm):
         model = Paciente
         fields = ["telefone", "cep", "endereco", "bairro", "cidade", "uf"]
         widgets = {
-            "telefone": forms.TextInput(attrs={"inputmode": "tel"}),
-            "cep": forms.TextInput(attrs={"inputmode": "numeric"}),
+            "telefone": forms.TextInput(attrs={"inputmode": "tel", "data-mascara": "telefone"}),
+            "cep": forms.TextInput(attrs={"inputmode": "numeric", "data-mascara": "cep", "data-viacep": "1", "placeholder": "00000-000"}),
         }

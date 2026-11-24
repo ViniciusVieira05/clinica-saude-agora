@@ -1,0 +1,7 @@
+{% for message in messages %}
+  <div class="aviso aviso--{{ message.tags|default:'info' }}">
+    {% if message.tags == "success" %}<i class="ph-fill ph-check-circle" aria-hidden="true"></i>{% elif message.tags == "error" %}<i class="ph-fill ph-warning-circle" aria-hidden="true"></i>{% else %}<i class="ph-fill ph-info" aria-hidden="true"></i>{% endif %}
+    <span>{{ message }}</span>
+    <button type="button" class="aviso__fechar" aria-label="Fechar aviso" onclick="this.parentElement.remove()"><i class="ph ph-x"></i></button>
+  </div>
+{% endfor %}

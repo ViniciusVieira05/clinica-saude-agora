@@ -1,0 +1,59 @@
+{% extends "painel/base_painel.html" %}
+{% block titulo %}Agenda do dia{% endblock %}
+{% block conteudo %}
+<div class="painel-cabecalho">
+  <div>
+    <h1>{% if data == hoje %}Hoje{% else %}{{ data|date:"l"|capfirst }}{% endif %}, {{ data|date:"d \d\e F" }}</h1>
+    <p>{{ resumo.total }} consulta{{ resumo.total|pluralize }}{% if profissional %} com {{ profissional.nome }}{% endif %}</p>
+  </div>
+  <form class="painel-filtros" method="get">
+    <div class="navegar-dia">
+      <a href="{{ link_anterior }}" class="botao botao--linha botao--icone" aria-label="Dia anterior"><i class="ph ph-caret-left"></i></a>
+      {% if data != hoje %}<a href="{{ link_hoje }}" class="botao botao--linha">Hoje</a>{% endif %}
+      <a href="{{ link_proximo }}" class="botao botao--linha botao--icone" aria-label="Próximo dia"><i class="ph ph-caret-right"></i></a>
+    </div>
+    <input type="date" name="data" value="{{ data|date:'Y-m-d' }}" onchange="this.form.submit()" aria-label="Escolher data">
+    <select name="profissional" onchange="this.form.submit()" aria-label="Profissional">
+      <option value="">Todos os profissionais</option>
+      {% for p in profissionais %}<option value="{{ p.pk }}" {% if p == profissional %}selected{% endif %}>{{ p.nome }}</option>{% endfor %}
+    </select>
+    <a href="{% url 'painel:nova_consulta' %}" class="botao botao--azul"><i class="ph ph-plus"></i>Nova consulta</a>
+  </form>
+</div>
+
+<div class="painel-resumo">
+  <div><small>Consultas</small><strong>{{ resumo.total }}</strong></div>
+  <div><small>Confirmadas</small><strong>{{ resumo.confirmadas }}</strong></div>
+  <div><small>Atendidas</small><strong>{{ resumo.realizadas }}</strong></div>
+  <div><small>Faltas</small><strong>{{ resumo.faltas }}</strong></div>
+  <div><small>Recebido</small><strong>R$ {{ resumo.recebido|floatformat:2 }}</strong></div>
+</div>
+
+{% if consultas %}
+  <div class="tabela-agenda">
+    <table>
+      <thead>
+        <tr><th>Hora</th><th>Paciente</th><th>Atendimento</th><th>Status</th><th>Pagamento</th><th class="col-acoes">Ações</th></tr>
+      </thead>
+      <tbody>
+        {% for c in consultas %}{% include "painel/_linha_consulta.html" %}{% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <div class="painel-vazio">
+    <i class="ph ph-calendar-blank" aria-hidden="true"></i>
+    <p>Nenhuma consulta neste dia.</p>
+    <a href="{% url 'painel:nova_consulta' %}" class="botao botao--azul">Marcar consulta</a>
+  </div>
+{% endif %}
+
+{% if canceladas %}
+  <details class="canceladas">
+    <summary>{{ canceladas|length }} cancelada{{ canceladas|pluralize }} neste dia</summary>
+    <ul>
+      {% for c in canceladas %}<li><span>{{ c.inicio|time:"H:i" }}</span> {{ c.paciente.nome }} · {{ c.profissional.nome }}</li>{% endfor %}
+    </ul>
+  </details>
+{% endif %}
+{% endblock %}

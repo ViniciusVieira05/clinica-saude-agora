@@ -1,0 +1,80 @@
+{% load saude %}
+<tr id="consulta-{{ c.pk }}" class="linha linha--{{ c.status }}">
+  <td class="col-hora">
+    <strong>{{ c.inicio|time:"H:i" }}</strong>
+    <small>até {{ c.fim|time:"H:i" }}</small>
+    {% if c.encaixe %}<span class="etiqueta-mini">Encaixe</span>{% endif %}
+  </td>
+  <td>
+    <a href="{% url 'painel:paciente' c.paciente.pk %}" class="linha__paciente">{{ c.paciente.nome }}</a>
+    <small>{{ c.paciente.telefone|telefone_formatado }}{% if c.origem == "site" %} · <span title="Agendou pelo site">site</span>{% endif %}</small>
+  </td>
+  <td>
+    <span>{{ c.servico.nome }}</span>
+    <small>{{ c.profissional.nome }}</small>
+  </td>
+  <td><span class="status status--{{ c.status }}">{{ c.get_status_display }}</span></td>
+  <td class="col-pagamento">
+    {% if c.esta_paga %}
+      <span class="pago"><i class="ph-fill ph-check-circle"></i>R$ {{ c.total_pago|floatformat:2 }}</span>
+    {% elif c.status != "faltou" %}
+      <button type="button" class="receber-botao" onclick="document.getElementById('pg-{{ c.pk }}').showModal()">
+        <span>R$ {{ c.preco|floatformat:2 }}</span>Receber
+      </button>
+      <dialog id="pg-{{ c.pk }}" class="dialogo">
+        <form hx-post="{% url 'painel:pagamento' c.pk %}" hx-target="#consulta-{{ c.pk }}" hx-swap="outerHTML" method="post" action="{% url 'painel:pagamento' c.pk %}">
+          {% csrf_token %}
+          <div class="dialogo__topo">
+            <div>
+              <h2>Registrar pagamento</h2>
+              <p>{{ c.paciente.nome }} · {{ c.servico.nome }} · {{ c.inicio|date:"d/m" }} às {{ c.inicio|time:"H:i" }}</p>
+            </div>
+            <button type="button" class="dialogo__fechar" aria-label="Fechar" onclick="this.closest('dialog').close()"><i class="ph ph-x"></i></button>
+          </div>
+          <div class="dialogo__corpo">
+            <label class="dialogo__campo">Valor (R$)
+              <input type="text" name="valor" inputmode="decimal" value="{{ c.preco|floatformat:2 }}" required>
+            </label>
+            <fieldset class="dialogo__formas">
+              <legend>Forma de pagamento</legend>
+              {% for valor, nome in formas_pagamento %}
+                <label><input type="radio" name="forma" value="{{ valor }}" {% if forloop.first %}checked{% endif %}><span>{{ nome }}</span></label>
+              {% endfor %}
+            </fieldset>
+          </div>
+          <div class="dialogo__acoes">
+            <button type="button" class="botao botao--linha" onclick="this.closest('dialog').close()">Cancelar</button>
+            <button type="submit" class="botao botao--azul">Registrar pagamento</button>
+          </div>
+        </form>
+      </dialog>
+      {% if c.total_pago %}<small>pago R$ {{ c.total_pago|floatformat:2 }}</small>{% endif %}
+    {% else %}
+      <small>—</small>
+    {% endif %}
+  </td>
+  <td class="col-acoes">
+    <div class="acoes">
+      {% if c.status == "agendada" or c.status == "confirmada" %}
+        <a class="botao-mini botao-mini--whatsapp" target="_blank" rel="noopener" title="Enviar lembrete pelo WhatsApp"
+           href="https://wa.me/{{ c.paciente.telefone|whatsapp_numero }}?text={% filter urlencode %}Olá, {{ c.paciente.nome|truncatewords:1|cut:'…' }}! Aqui é da {{ clinica.nome }}. Lembrando da sua consulta {{ c.inicio|date:'l, d/m' }} às {{ c.inicio|time:'H:i' }} com {{ c.profissional.nome }}. Pode confirmar sua presença?{% endfilter %}">
+          <i class="ph-fill ph-whatsapp-logo"></i><span>Lembrete</span>
+        </a>
+      {% endif %}
+      {% if c.status == "agendada" %}
+        <button class="botao-mini" hx-post="{% url 'painel:acao' c.pk 'confirmar' %}" hx-target="#consulta-{{ c.pk }}" hx-swap="outerHTML"><i class="ph ph-check"></i><span>Confirmar</span></button>
+      {% endif %}
+      {% if c.status == "agendada" or c.status == "confirmada" %}
+        <button class="botao-mini botao-mini--forte" hx-post="{% url 'painel:acao' c.pk 'realizada' %}" hx-target="#consulta-{{ c.pk }}" hx-swap="outerHTML"><i class="ph ph-user-check"></i><span>Atendido</span></button>
+        <details class="mais-acoes">
+          <summary class="botao-mini" aria-label="Mais ações"><i class="ph ph-dots-three"></i></summary>
+          <div class="mais-acoes__menu">
+            <button hx-post="{% url 'painel:acao' c.pk 'falta' %}" hx-target="#consulta-{{ c.pk }}" hx-swap="outerHTML"><i class="ph ph-user-minus"></i>Marcar falta</button>
+            <button hx-post="{% url 'painel:acao' c.pk 'cancelar' %}" hx-target="#consulta-{{ c.pk }}" hx-swap="outerHTML" hx-confirm="Cancelar a consulta de {{ c.paciente.nome }} às {{ c.inicio|time:'H:i' }}?" class="perigo"><i class="ph ph-x-circle"></i>Cancelar consulta</button>
+          </div>
+        </details>
+      {% endif %}
+    </div>
+  </td>
+</tr>
+{% if request.htmx %}<div id="avisos" class="avisos" hx-swap-oob="true">{% include "painel/_avisos.html" %}</div>{% endif %}

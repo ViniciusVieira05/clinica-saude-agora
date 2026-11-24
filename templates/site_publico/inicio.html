@@ -146,7 +146,7 @@
   <h2 class="secao__titulo">Quem cuida de você</h2>
   <div class="cartoes">
     {% for profissional in profissionais %}
-      <article class="profissional">
+      <a href="{% url 'site_publico:profissional' profissional.pk %}" class="profissional">
         {% if profissional.foto %}
           <img src="{{ profissional.foto.url }}" alt="{{ profissional.nome }}" loading="lazy">
         {% else %}
@@ -156,8 +156,9 @@
           <strong>{{ profissional.nome }}</strong>
           <small>{% for e in profissional.especialidades.all %}{{ e.nome }}{% if not forloop.last %}, {% endif %}{% endfor %}</small>
           <small class="profissional__registro"><i class="ph ph-seal-check" aria-hidden="true"></i>{{ profissional.registro_formatado }}</small>
+          <span class="cartao__link">Ver perfil e horários <i class="ph ph-arrow-right seta" aria-hidden="true"></i></span>
         </div>
-      </article>
+      </a>
     {% endfor %}
   </div>
 </section>
