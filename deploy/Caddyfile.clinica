@@ -1,0 +1,19 @@
+# Bloco para colar no FINAL do /etc/caddy/Caddyfile (não altere os blocos que já existem).
+# O Caddy cria e renova o HTTPS sozinho.
+clinica.cortio.com.br {
+	encode zstd gzip
+
+	handle_path /static/* {
+		root * /srv/saude_agora/staticfiles
+		file_server
+	}
+
+	handle_path /media/* {
+		root * /srv/saude_agora/media
+		file_server
+	}
+
+	handle {
+		reverse_proxy 127.0.0.1:8002
+	}
+}

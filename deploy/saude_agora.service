@@ -1,3 +1,4 @@
+# NÃO USADO: a VPS roda os sistemas com Docker + Caddy. Pode apagar este arquivo.
 # /etc/systemd/system/saude_agora.service
 # Mantém o sistema da clínica ligado (Gunicorn) e reinicia sozinho se cair.
 [Unit]
